@@ -1,0 +1,22 @@
+{
+  "auth": {
+    "clientId": "c33a6b4b-a79b-432b-bd15-e4900976c2ab",
+    "authority": "https://login.microsoftonline.com/common",
+    "validateAuthority": true,
+    "redirectUri": "http://localhost:4200",
+    "postLogoutRedirectUri": "http://localhost:4200",
+    "navigateToLoginRequestUrl": true
+  },
+    "cache": {
+        "cacheLocation": "localStorage"
+    },
+    "scopes": {
+        "loginRequest": ["openid", "profile", "User.Read"]
+    },
+    "resources": {
+      "todoListApi": {
+        "resourceUri": "https://localhost:44351/api/profile/",
+        "resourceScope": "https://msaltestingjs.onmicrosoft.com/TodoListClient-and-Service/access_as_user"
+      }
+    }     
+}
