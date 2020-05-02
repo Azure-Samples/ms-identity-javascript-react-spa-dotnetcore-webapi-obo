@@ -1,20 +1,16 @@
 {
   "Sample": {
-    "Title": "A WPF application that calls a Web API running on ASP.NET Core 2.0 protected by Azure AD using OAuth 2.0 access tokens. ",
+    "Title": "A React & Redux single-page application authorizing an ASP.NET Core Web API to call MS Graph API on its behalf using the MS Graph SDK",
     "Level": 200,
-    "Client": ".NET Desktop (WPF)",
+    "Client": "React & Redux SPA",
     "Service": "ASP.NET Core Web API",
-    "RepositoryUrl": "active-directory-dotnet-native-aspnetcore-v2",
+    "RepositoryUrl": "ms-identity-javascript-react-spa-dotnetcore-webapi-obo",
     "Endpoint": "AAD v2.0"
   },
-
-  /*
-    This section describes the Azure AD Applications to configure, and their dependencies
-  */
   "AADApps": [
     {
       "Id": "service",
-      "Name": "TodoListClient-and-Service",
+      "Name": "ProfileAPIandSPA",
       "Kind": "WebApi",
       "HomePage": "https://localhost:44351/",
       "PasswordCredentials": "Auto",
@@ -30,7 +26,7 @@
       ],
       "ManualSteps": [
         {
-          "Comment": "Navigate to the Authentication blade, click 'Add a platform' then check the option https://login.microsoftonline.com/common/oauth2/nativeclient"
+          "Comment": "Navigate to the Authentication blade, click 'Add a platform', choose 'Web' and register your return uri i.e. http://localhost:3000"
         },
         {
           "Comment": "Navigate to the Expose an API blade and change the Application ID URI to use the https pattern. i.e. https://<tenant_domain>/<app_name>"
@@ -40,25 +36,15 @@
         },
         {
           "Comment": "Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2."
-        },
-        {
-          "Comment": "[Optional] If you are a tenant admin, you can navigate to the API Permisions page and select 'Grant admin consent for (your tenant)'"
         }
       ]
     }
   ],
-
-  /*
-    This section describes how to update the code in configuration files from the apps coordinates, once the apps
-    are created in Azure AD.
-    Each section describes a configuration file, for one of the apps, it's type (XML, JSon, plain text), its location
-    with respect to the root of the sample, and the mappping (which string in the config file is mapped to which value
-  */
   "CodeConfiguration": [
     {
       "App": "service",
       "SettingKind": "Text",
-      "SettingFile": "\\..\\TodoListService\\appsettings.json",
+      "SettingFile": "\\..\\ProfileAPI\\appsettings.json",
       "Mappings": [
         {
           "key": "Domain",
@@ -77,19 +63,19 @@
 
     {
       "App": "client",
-      "SettingKind": "XML",
-      "SettingFile": "\\..\\TodoListClient\\App.Config",
+      "SettingKind": "Replace",
+      "SettingFile": "\\..\\ProfileSPA\\src\\utils\\authConfig.js",
       "Mappings": [
         {
-          "key": "ida:ClientId",
+          "key": "ClientId",
           "value": "service.AppId"
         },
         {
-          "key": "todo:TodoListScope",
-          "value": "'https://'+$tenantName+\"/TodoListClient-and-Service/access_as_user\""
+          "key": "ResourceScopes",
+          "value": "'https://'+$tenantName+\"/ProfileAPIandSPA/access_as_user\""
         },
         {
-          "key": "todo:TodoListBaseAddress",
+          "key": "ResourceUri",
           "value": "service.HomePage"
         }
       ]

@@ -2,7 +2,9 @@
 param(
     [PSCredential] $Credential,
     [Parameter(Mandatory=$False, HelpMessage='Tenant ID (This is a GUID which represents the "Directory ID" of the AzureAD tenant into which you want to create the apps')]
-    [string] $tenantId
+    [string] $tenantId,
+    [Parameter(Mandatory=$False, HelpMessage='Azure environment to use while running the script (it defaults to AzureCloud)')]
+    [string] $azureEnvironmentName
 )
 
 <#
@@ -98,24 +100,6 @@ Function GetRequiredPermissions([string] $applicationDisplayName, [string] $requ
 }
 
 
-# Replace the value of an appsettings of a given key in an XML App.Config file.
-Function ReplaceSetting([string] $configFilePath, [string] $key, [string] $newValue)
-{
-    [xml] $content = Get-Content $configFilePath
-    $appSettings = $content.configuration.appSettings; 
-    $keyValuePair = $appSettings.SelectSingleNode("descendant::add[@key='$key']")
-    if ($keyValuePair)
-    {
-        $keyValuePair.value = $newValue;
-    }
-    else
-    {
-        Throw "Key '$key' not found in file '$configFilePath'"
-    }
-   $content.save($configFilePath)
-}
-
-
 Function UpdateLine([string] $line, [string] $value)
 {
     $index = $line.IndexOf('=')
@@ -144,6 +128,37 @@ Function UpdateTextFile([string] $configFilePath, [System.Collections.HashTable]
             if ($line.Contains($key))
             {
                 $lines[$index] = UpdateLine $line $dictionary[$key]
+            }
+        }
+        $index++
+    }
+
+    Set-Content -Path $configFilePath -Value $lines -Force
+}
+
+Function ReplaceInLine([string] $line, [string] $key, [string] $value)
+{
+    $index = $line.IndexOf($key)
+    if ($index -ige 0)
+    {
+        $index2 = $index+$key.Length
+        $line = $line.Substring(0, $index) + $value + $line.Substring($index2)
+    }
+    return $line
+}
+
+Function ReplaceInTextFile([string] $configFilePath, [System.Collections.HashTable] $dictionary)
+{
+    $lines = Get-Content $configFilePath
+    $index = 0
+    while($index -lt $lines.Length)
+    {
+        $line = $lines[$index]
+        foreach($key in $dictionary.Keys)
+        {
+            if ($line.Contains($key))
+            {
+                $lines[$index] = ReplaceInLine $line $key $dictionary[$key]
             }
         }
         $index++
@@ -201,6 +216,11 @@ Function ConfigureApplications
    so that they are consistent with the Applications parameters
 #> 
     $commonendpoint = "common"
+    
+    if (!$azureEnvironmentName)
+    {
+        $azureEnvironmentName = "AzureCloud"
+    }
 
     # $tenantId is the Active Directory Tenant. This is a GUID which represents the "Directory ID" of the AzureAD tenant
     # into which you want to create the apps. Look it up in the Azure portal in the "Properties" of the Azure AD.
@@ -209,17 +229,17 @@ Function ConfigureApplications
     # you'll need to sign-in with creds enabling your to create apps in the tenant)
     if (!$Credential -and $TenantId)
     {
-        $creds = Connect-AzureAD -TenantId $tenantId
+        $creds = Connect-AzureAD -TenantId $tenantId -AzureEnvironmentName $azureEnvironmentName
     }
     else
     {
         if (!$TenantId)
         {
-            $creds = Connect-AzureAD -Credential $Credential
+            $creds = Connect-AzureAD -Credential $Credential -AzureEnvironmentName $azureEnvironmentName
         }
         else
         {
-            $creds = Connect-AzureAD -TenantId $tenantId -Credential $Credential
+            $creds = Connect-AzureAD -TenantId $tenantId -Credential $Credential -AzureEnvironmentName $azureEnvironmentName
         }
     }
 
@@ -228,6 +248,8 @@ Function ConfigureApplications
         $tenantId = $creds.Tenant.Id
     }
 
+    
+
     $tenant = Get-AzureADTenantDetail
     $tenantName =  ($tenant.VerifiedDomains | Where { $_._Default -eq $True }).Name
 
@@ -235,14 +257,14 @@ Function ConfigureApplications
     $user = Get-AzureADUser -ObjectId $creds.Account.Id
 
    # Create the service AAD application
-   Write-Host "Creating the AAD application (TodoListClient-and-Service)"
+   Write-Host "Creating the AAD application (ProfileAPIandSPA)"
    # Get a 2 years application key for the service Application
    $pw = ComputePassword
    $fromDate = [DateTime]::Now;
    $key = CreateAppKey -fromDate $fromDate -durationInYears 2 -pw $pw
    $serviceAppKey = $pw
    # create the application 
-   $serviceAadApplication = New-AzureADApplication -DisplayName "TodoListClient-and-Service" `
+   $serviceAadApplication = New-AzureADApplication -DisplayName "ProfileAPIandSPA" `
                                                    -HomePage "https://localhost:44351/" `
                                                    -AvailableToOtherTenants $True `
                                                    -PasswordCredentials $key `
@@ -280,9 +302,9 @@ Function ConfigureApplications
         {
             # Add scope
             $scope = CreateScope -value "access_as_user"  `
-                -userConsentDisplayName "Access TodoListClient-and-Service"  `
-                -userConsentDescription "Allow the application to access TodoListClient-and-Service on your behalf."  `
-                -adminConsentDisplayName "Access TodoListClient-and-Service"  `
+                -userConsentDisplayName "Access ProfileAPIandSPA"  `
+                -userConsentDescription "Allow the application to access ProfileAPIandSPA on your behalf."  `
+                -adminConsentDisplayName "Access ProfileAPIandSPA"  `
                 -adminConsentDescription "Allows the app to have the same access to information in the directory on behalf of the signed-in user."
             
             $scopes.Add($scope)
@@ -292,12 +314,12 @@ Function ConfigureApplications
     # add/update scopes
     Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -OAuth2Permission $scopes
 
-   Write-Host "Done creating the service application (TodoListClient-and-Service)"
+   Write-Host "Done creating the service application (ProfileAPIandSPA)"
 
    # URL of the AAD application in the Azure portal
    # Future? $servicePortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$serviceAadApplication.AppId+"/objectId/"+$serviceAadApplication.ObjectId+"/isMSAApp/"
    $servicePortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$serviceAadApplication.AppId+"/objectId/"+$serviceAadApplication.ObjectId+"/isMSAApp/"
-   Add-Content -Value "<tr><td>service</td><td>$currentAppId</td><td><a href='$servicePortalUrl'>TodoListClient-and-Service</a></td></tr>" -Path createdApps.html
+   Add-Content -Value "<tr><td>service</td><td>$currentAppId</td><td><a href='$servicePortalUrl'>ProfileAPIandSPA</a></td></tr>" -Path createdApps.html
 
    $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.RequiredResourceAccess]
 
@@ -310,7 +332,7 @@ Function ConfigureApplications
 
    # Add Required Resources Access (from 'service' to 'service')
    Write-Host "Getting access from 'service' to 'service'"
-   $requiredPermissions = GetRequiredPermissions -applicationDisplayName "TodoListClient-and-Service" `
+   $requiredPermissions = GetRequiredPermissions -applicationDisplayName "ProfileAPIandSPA" `
                                                 -requiredDelegatedPermissions "access_as_user" `
 
    $requiredResourcesAccess.Add($requiredPermissions)
@@ -328,27 +350,25 @@ Function ConfigureApplications
 
 
    # Update config file for 'service'
-   $configFile = $pwd.Path + "\..\TodoListService\appsettings.json"
+   $configFile = $pwd.Path + "\..\ProfileAPI\appsettings.json"
    Write-Host "Updating the sample code ($configFile)"
    $dictionary = @{ "Domain" = $tenantName;"ClientId" = $serviceAadApplication.AppId;"ClientSecret" = $serviceAppKey };
    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
 
    # Update config file for 'client'
-   $configFile = $pwd.Path + "\..\TodoListClient\App.Config"
+   $configFile = $pwd.Path + "\..\ProfileSPA\src\utils\authConfig.js"
    Write-Host "Updating the sample code ($configFile)"
-   ReplaceSetting -configFilePath $configFile -key "ida:ClientId" -newValue ($serviceAadApplication.AppId)
-   ReplaceSetting -configFilePath $configFile -key "todo:TodoListScope" -newValue ('https://'+$tenantName+"/TodoListClient-and-Service/access_as_user")
-   ReplaceSetting -configFilePath $configFile -key "todo:TodoListBaseAddress" -newValue ($serviceAadApplication.HomePage)
+   $dictionary = @{ "ClientId" = $serviceAadApplication.AppId;"ResourceScopes" = 'https://'+$tenantName+"/ProfileAPIandSPA/access_as_user";"ResourceUri" = $serviceAadApplication.HomePage };
+   ReplaceInTextFile -configFilePath $configFile -dictionary $dictionary
    Write-Host ""
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
    Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
    Write-Host "- For 'service'"
    Write-Host "  - Navigate to '$servicePortalUrl'"
-   Write-Host "  - Navigate to the Authentication blade, click 'Add a platform' then check the option https://login.microsoftonline.com/common/oauth2/nativeclient" -ForegroundColor Red 
+   Write-Host "  - Navigate to the Authentication blade, click 'Add a platform', choose 'Web' and register your return uri i.e. http://localhost:3000" -ForegroundColor Red 
    Write-Host "  - Navigate to the Expose an API blade and change the Application ID URI to use the https pattern. i.e. https://<tenant_domain>/<app_name>" -ForegroundColor Red 
    Write-Host "  - Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'." -ForegroundColor Red 
    Write-Host "  - Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2." -ForegroundColor Red 
-   Write-Host "  - [Optional] If you are a tenant admin, you can navigate to the API Permisions page and select 'Grant admin consent for (your tenant)'" -ForegroundColor Red 
 
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
      
