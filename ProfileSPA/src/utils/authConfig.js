@@ -5,7 +5,7 @@ import { UserAgentApplication } from "msal";
 export const msalApp = new UserAgentApplication({
     auth: {
         clientId: "c33a6b4b-a79b-432b-bd15-e4900976c2ab",
-        authority: "https://login.microsoftonline.com/common",
+        authority: "https://login.microsoftonline.com/consumers",
         validateAuthority: true,
         redirectUri: "http://localhost:3000",
         navigateToLoginRequestUrl: false
@@ -19,7 +19,7 @@ export const msalApp = new UserAgentApplication({
 // Coordinates and required scopes for your web api
 export const apiConfig = {
     resourceUri: "https://localhost:44351/api/profile/",
-    resourceScopes: ["https://msaltestingjs.onmicrosoft.com/TodoListClient-and-Service/access_as_user"]
+    resourceScope: "https://msaltestingjs.onmicrosoft.com/TodoListClient-and-Service/access_as_user"
 }
 
 /** 
@@ -32,5 +32,5 @@ export const loginRequest = {
 
 // Add here scopes for access token to be used at the API endpoints.
 export const tokenRequest = {
-    scopes: apiConfig.resourceScopes
+    scopes: [apiConfig.resourceScope]
 }

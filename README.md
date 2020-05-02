@@ -11,34 +11,35 @@ description: "This sample demonstrates a React & Redux single-page application a
 urlFragment: "ms-identity-javascript-react-spa-dotnetcore-webapi-obo"
 ---
 
-# A React & Redux single-page application authorizing a ASP.NET Core Web API to call MS Graph API on its behalf using MS Graph SDK
+# A React & Redux single-page application authorizing an ASP.NET Core Web API to call MS Graph API on its behalf
 
 ## About this sample
 
 ### Overview
 
-This sample demonstrates a React & Redux single-page application allowing a user to authenticate and authorize a ASP.NET Core Web API that was protected by Azure AD to call MS Graph API on its behalf using the MS Graph SDK.
+This sample demonstrates a React & Redux single-page application allowing a user to authenticate and authorize an ASP.NET Core Web API that was protected by [Azure AD](https://azure.microsoft.com/en-ca/services/active-directory/) to call [MS Graph API](https://developer.microsoft.com/en-us/graph) on its behalf using the AAD [on-behalf-of flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow). The API call to MS Graph API is made using the [MS Graph SDK](https://docs.microsoft.com/en-us/graph/sdks/sdks-overview).
 
 ### Scenario
 
-- TodoListSPA uses [MSAL.js](https://github.com/AzureAD/microsoft-authentication-library-for-js) and [MSAL-Angular](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-angular) to authenticate a user.
-- The app then obtains an [access token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from Azure Active Directory (Azure AD) on behalf of the authenticated user.
-- The access token is then used to authorize the call to the TodoListAPI.
-- TodoListAPI uses [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) and [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) to protect its endpoint and accept authorized calls.
+- The sample implements an **onboarding** scenario where a profile is created for a new user whose fields are pre-populated by the available information about the user on MS Graph API.
+- ProfileSPA uses [MSAL.js](https://github.com/AzureAD/microsoft-authentication-library-for-js) to authenticate a user and [React-Redux](https://react-redux.js.org/) to store id and access tokens.
+- Once the user authenticates, ProfileSPA obtains an [access token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from Azure Active Directory (Azure AD).
+- The access token is then used to authorize the ProfileAPI to call MS Graph API **on user's behalf**. In order to call MS Graph API, ProfileAPI uses the [MS Graph SDK](https://docs.microsoft.com/en-us/graph/sdks/sdks-overview).
+- To protect its endpoint and accept only the authorized calls, the ProfileAPI uses [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) and [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web).
 
 ![Topology](./ReadmeFiles/topology.png)
 
 > [!NOTE]
-> This sample is configured to allow sign-ins with **personal Microsoft accounts**.
+> This sample is configured to allow sign-ins with **personal Microsoft accounts** ONLY.
 
 ### Contents
 
 | File/folder       | Description                                |
 |-------------------|--------------------------------------------|
-| `AppCreationScripts` | Contains Powershell scripts to automate app registrations. |
+| `AppCreationScripts` | Contains Powershell scripts to automate app registration. |
 | `ReadmeFiles` | Sample readme files.                          |
-| `TodoListAPI` | Source code of the TodoList API.  |
-| `TodoListSPA` | Source code of the TodoList client SPA.  |
+| `ProfileAPI` | Source code of the ProfileAPI.  |
+| `ProfileSPA` | Source code of the ProfileSPA.  |
 | `CHANGELOG.md`    | List of changes to the sample.             |
 | `CONTRIBUTING.md` | Guidelines for contributing to the sample. |
 | `README.md`       | This README file.                          |
@@ -50,13 +51,14 @@ This sample demonstrates a React & Redux single-page application allowing a user
 
 - [Node.js](https://nodejs.org/en/download/) must be installed to run this sample.
 - [Dotnet Core SDK](https://dotnet.microsoft.com/download) must be installed to run this sample.
-- We recommend [VS Code](https://code.visualstudio.com/download) for running and debugging this cross-platform application.
-- An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/)
+- An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
 - A **personal Microsoft account**. This sample will not work with work or school accounts.
+- We recommend the [VS Code](https://code.visualstudio.com/download) for running and debugging this cross-platform application.
+- We recommend the [Redux DevTools](https://github.com/zalmoxisus/redux-devtools-extension) browser extension for monitoring your Redux store.
 
 ### Steps
 
-Using a command line interface such as VS Code integrated terminal, follow the steps below:
+Using a command line interface such as [VS Code integrated terminal](https://code.visualstudio.com/docs/editor/integrated-terminal), follow the steps below:
 
 #### Step 1. Clone or download this repository
 
@@ -125,54 +127,77 @@ There are two projects in this sample. To register these projects, you can:
 
 </details>
 
-
 > [!NOTE]
-> If you would like to authorize users from other tenants to use this application (i.e. multi-tenancy - learn more about [tenancy in Azure AD](https://docs.microsoft.com/azure/active-directory/develop/single-and-multi-tenant-apps)), you may want to *combine* the registration steps for Web API and SPA, so that both the Web API and the SPA uses the **same** Application (client) ID. This is not needed for supporting **personal Microsoft accounts**.
+> This sample uses a single Application Registration (i.e. App/Client Id) for both the Web API and the SPA projects.
 
-#### Register the service app (ProfileAPI)
+#### Register the service: ProfileAPI
 
 1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
 1. Select **New registration**.
-1. In the **Register an application page** that appears, enter your application's registration information:
-   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `TodoListAPI`.
-   - Under **Supported account types**, select **Accounts in any organizational directory and personal Microsoft accounts**.
-1. Select **Register** to create the application.
-1. In the app's registration screen, find and note the **Application (client) ID**. You use this value in your app's configuration file(s) later in your code.
-1. Select **Save** to save your changes.
-1. In the app's registration screen, click on the **Expose an API** blade to the left to open the page where you can declare the parameters to expose this app as an Api for which client applications can obtain [access tokens](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) for.
-The first thing that we need to do is to declare the unique [resource](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow) URI that the clients will be using to obtain access tokens for this Api. To declare an resource URI, follow the following steps:
-   - Click `Set` next to the **Application ID URI** to generate a URI that is unique for this app.
-   - For this sample, accept the proposed Application ID URI (api://{clientId}) by selecting **Save**.
-1. All Apis have to publish a minimum of one [scope](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-authorization-code) for the client's to obtain an access token successfully. To publish a scope, follow the following steps:
-   - Select **Add a scope** button open the **Add a scope** screen and Enter the values as indicated below:
-        - For **Scope name**, use `access_as_user`.
-        - Select **Admins and users** options for **Who can consent?**
-        - For **Admin consent display name** type `Access TodoListAPI`
-        - For **Admin consent description** type `Allows the app to access TodoListAPI as the signed-in user.`
-        - For **User consent display name** type `Access TodoListAPI`
-        - For **User consent description** type `Allow the application to access TodoListAPI on your behalf.`
-        - Keep **State** as **Enabled**
-        - Click on the **Add scope** button on the bottom to save this scope.
+1. When the **Register an application page** appears, enter your application's registration information:
+   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `ProfileAPIandSPA`.
+   - Change **Supported account types** to **Accounts in any organizational directory and personal Microsoft accounts (e.g. Skype, Xbox, Outlook.com)**.
+   - Select **Register** to create the application.
+1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the configuration file for this projects.
+1. From the **Certificates & secrets** page, in the **Client secrets** section, choose **New client secret**:
+   - Type a key description (of instance `app secret`),
+   - Select a key duration of either **In 1 year**, **In 2 years**, or **Never Expires**.
+   - When you press the **Add** button, the key value will be displayed, copy, and save the value in a safe location.
+   - You'll need this key later to configure the project in Visual Studio. This key value will not be displayed again, nor retrievable by any other means,
+     so record it as soon as it is visible from the Azure portal.
+1. Select the **API permissions** section
+   - Click the **Add a permission** button and then,
+   - Ensure that the **Microsoft APIs** tab is selected
+   - In the *Commonly used Microsoft APIs* section, click on **Microsoft Graph**
+   - In the **Delegated permissions** section, ensure that the right permissions are checked: **User.Read**. Use the search box if necessary.
+   - Select the **Add permissions** button
+   - [Optional] if you are a tenant admin, and agree to grant the admin consent to the web api, select **Grant admin consent for {your tenant domain}**. If you don't do
+    it, users will be presented a consent screen enabling them to consent to using the web api.
+1. Select the **Expose an API** section, and:
+   - Select **Add a scope**
+   - Change the Application ID URI to the **https** pattern, [check AzureADandPersonalMicrosoftAccount restrictions](https://docs.microsoft.com/en-us/azure/active-directory/develop/supported-accounts-validation), (https://{tenant-domain}/{app-name}) and select **Save and Continue**.
+   - Enter the following parameters
+     - for **Scope name** use `access_as_user`
+     - Keep **Admins and users** for **Who can consent**
+     - in **Admin consent display name** type `Access ProfileAPI as a user`
+     - in **Admin consent description** type `Accesses the ProfileAPI Web API as a user`
+     - in **User consent display name** type `Access ProfileAPI as a user`
+     - in **User consent description** type `Accesses the ProfileAPI Web API as a user`
+     - Keep **State** as **Enabled**
+     - Select **Add scope**
 
-##### Configure the  service app (TodoListAPI) to use your app registration
+#### Register the client: ProfileSPA (in the same application registration)
 
-Open the project in your IDE (like Visual Studio) to configure the code.
+1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the configuration file for this project.
+1. From the app's Overview page, select the **Authentication** section.
+   - Click **Add a platform** button.
+   - Select **Web Applications** on the right blade.
+   - Add a **Redirect URIs**, for instance **http://localhost:3000**.
+   - Click **Configure**.
+1. Select the **API permissions** section
+   - Click the **Add a permission** button and then,
+   - Ensure that the **My APIs** tab is selected
+   - In the list of APIs, select the `ProfileAPIandSPA` API, or the name you entered for the Web API.
+   - In the **Delegated permissions** section, ensure that the right permissions are checked: **access_as_user**. Use the search box if necessary.
+   - Select the **Add permissions** button
+
+##### Configure the service app (ProfileAPI) to use your app registration
+
 >In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
-1. Open the `TodoListAPI\appsettings.json` file
+1. Open the `ProfileAPI\appsettings.json` file
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `TodoListAPI` application copied from the Azure portal.
+1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `ProfileAPIandSPA` application copied from the Azure portal.
+1. Find the app key `ClientSecret` and replace the existing value with the Client Secret of the `ProfileAPIandSPA` application copied from the Azure portal.
 
-##### Configure the  client app (TodoListSPA) to use your app registration
+##### Configure the client app (ProfileSPA) to use your app registration
 
-Open the project in your IDE (like Visual Studio) to configure the code.
 >In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
-1. Open the `TodoListSPA\src\app\app-config.json` file
-1. Find the app key `clientId` and replace the existing value with the application ID (clientId) of the `TodoListSPA` application copied from the Azure portal.
-1. Find the app key `redirectUri` and replace the existing value with the base address of the TodoListSPA project (by default `http://localhost:4200/`).
-1. Find the app key `postLogoutRedirectUri` and replace the existing value with the base address of the TodoListSPA project (by default `http://localhost:4200/`).
-1. Find the app key `resourceUri` and replace the existing value with the base address of the TodoListAPI project (by default `https://localhost:44351/api/todolist/`).
+1. Open the `ProfileSPA\src\utils\authConfig.js` file
+1. Find the app key `clientId` and replace the existing value with the application ID (clientId) of the `ProfileAPIandSPA` application copied from the Azure portal.
+1. Find the app key `redirectUri` and replace the existing value with the base address of the ProfileSPA project (by default `http://localhost:3000/`).
+1. Find the app key `resourceUri` and replace the existing value with the base address of the ProfileAPI project (by default `https://localhost:44351/api/profile/`).
 1. Find the app key `resourceScope` and replace the existing value with *Scope* you created earlier `api://{clientId}/access_as_user`.
 
 ### Run the sample
@@ -196,7 +221,9 @@ npm start
 
 1. Open your browser and navigate to http://localhost:3000.
 2. Sign-in using the button on top-right corner.
-3. Click on the "Get my tasks" button to access your todo list.
+3. If this is your first time sign-in, you will be redirected to the onboarding page.
+4. Hit "Accept" and a new account will be created for you in the database, pre-populated by the available information on MS Graph API.
+5. Submit your changes. When you sign-in next time, the application will recognize you and show you the profile information in the database.
 
 > [!NOTE]
 > Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../issues) page.
@@ -209,9 +236,7 @@ Learn more about using [.NET Core with Visual Studio Code](https://docs.microsof
 
 ## Key concepts
 
-This sample demonstrates the following Azure AD and Microsoft Identity Platform
-
- workflows:
+This sample demonstrates the following Azure AD and Microsoft Identity Platform workflows:
 
 - How to protect a Web API.
 - How to configure application parameters.

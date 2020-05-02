@@ -13,7 +13,6 @@
       "Name": "ProfileAPIandSPA",
       "Kind": "WebApi",
       "HomePage": "https://localhost:44351/",
-      "PasswordCredentials": "Auto",
       "RequiredResourcesAccess": [
         {
           "Resource": "Microsoft Graph",
@@ -71,7 +70,7 @@
           "value": "service.AppId"
         },
         {
-          "key": "ResourceScopes",
+          "key": "ResourceScope",
           "value": "'https://'+$tenantName+\"/ProfileAPIandSPA/access_as_user\""
         },
         {
