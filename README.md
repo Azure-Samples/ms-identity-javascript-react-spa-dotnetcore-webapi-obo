@@ -17,7 +17,11 @@ urlFragment: "ms-identity-javascript-react-spa-dotnetcore-webapi-obo"
 
 ### Overview
 
-This sample demonstrates a React & Redux single-page application allowing a user to authenticate and authorize an ASP.NET Core Web API that was protected by [Azure AD](https://azure.microsoft.com/en-ca/services/active-directory/) to call [MS Graph API](https://developer.microsoft.com/en-us/graph) on its behalf using the AAD [on-behalf-of flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow). The API call to MS Graph API is made using the [MS Graph SDK](https://docs.microsoft.com/en-us/graph/sdks/sdks-overview).
+This sample demonstrates a React & Redux single-page application allowing a user to authenticate and authorize an ASP.NET Core Web API that was protected by [Azure AD](https://azure.microsoft.com/en-ca/services/active-directory/) to call [MS Graph API](https://developer.microsoft.com/en-us/graph) on its behalf using the AAD [on-behalf-of flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow).
+
+The API call to MS Graph API is made using the [MS Graph SDK](https://docs.microsoft.com/en-us/graph/sdks/sdks-overview).
+
+
 
 ### Scenario
 
@@ -30,7 +34,7 @@ This sample demonstrates a React & Redux single-page application allowing a user
 ![Topology](./ReadmeFiles/topology.png)
 
 > [!NOTE]
-> This sample is configured to allow sign-ins with **personal Microsoft accounts** ONLY.
+> This sample is configured to allow sign-ins with **personal Microsoft accounts** ONLY using the `/consumers` endpoint. Learn more about [supported account](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-supported-account-types) types and [validation differences between them](https://docs.microsoft.com/en-us/azure/active-directory/develop/supported-accounts-validation).
 
 ### Contents
 
@@ -223,7 +227,7 @@ npm start
 2. Sign-in using the button on top-right corner.
 3. If this is your first time sign-in, you will be redirected to the onboarding page.
 4. Hit "Accept" and a new account will be created for you in the database, pre-populated by the available information on MS Graph API.
-5. Submit your changes. When you sign-in next time, the application will recognize you and show you the profile information in the database.
+5. Submit your changes. When you sign-in next time, the application will recognize you and show you the profile associated with your Id in the database.
 
 > [!NOTE]
 > Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../issues) page.
