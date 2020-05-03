@@ -19,6 +19,32 @@ param(
  There are four ways to run this script. For more information, read the AppCreationScripts.md file in the same folder as this script.
 #>
 
+# Create a password that can be used as an application key
+Function ComputePassword
+{
+    $aesManaged = New-Object "System.Security.Cryptography.AesManaged"
+    $aesManaged.Mode = [System.Security.Cryptography.CipherMode]::CBC
+    $aesManaged.Padding = [System.Security.Cryptography.PaddingMode]::Zeros
+    $aesManaged.BlockSize = 128
+    $aesManaged.KeySize = 256
+    $aesManaged.GenerateKey()
+    return [System.Convert]::ToBase64String($aesManaged.Key)
+}
+
+# Create an application key
+# See https://www.sabin.io/blog/adding-an-azure-active-directory-application-and-key-using-powershell/
+Function CreateAppKey([DateTime] $fromDate, [double] $durationInYears, [string]$pw)
+{
+    $endDate = $fromDate.AddYears($durationInYears) 
+    $keyId = (New-Guid).ToString();
+    $key = New-Object Microsoft.Open.AzureAD.Model.PasswordCredential
+    $key.StartDate = $fromDate
+    $key.EndDate = $endDate
+    $key.Value = $pw
+    $key.KeyId = $keyId
+    return $key
+}
+
 # Adds the requiredAccesses (expressed as a pipe separated string) to the requiredAccess structure
 # The exposed permissions are in the $exposedPermissions collection, and the type of permission (Scope | Role) is 
 # described in $permissionType
@@ -232,10 +258,16 @@ Function ConfigureApplications
 
    # Create the service AAD application
    Write-Host "Creating the AAD application (ProfileAPIandSPA)"
+   # Get a 2 years application key for the service Application
+   $pw = ComputePassword
+   $fromDate = [DateTime]::Now;
+   $key = CreateAppKey -fromDate $fromDate -durationInYears 2 -pw $pw
+   $serviceAppKey = $pw
    # create the application 
    $serviceAadApplication = New-AzureADApplication -DisplayName "ProfileAPIandSPA" `
                                                    -HomePage "https://localhost:44351/" `
                                                    -AvailableToOtherTenants $True `
+                                                   -PasswordCredentials $key `
                                                    -PublicClient $False
    $serviceIdentifierUri = 'api://'+$serviceAadApplication.AppId
    Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -IdentifierUris $serviceIdentifierUri
@@ -294,7 +326,7 @@ Function ConfigureApplications
    # Add Required Resources Access (from 'service' to 'Microsoft Graph')
    Write-Host "Getting access from 'service' to 'Microsoft Graph'"
    $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Microsoft Graph" `
-                                                -requiredDelegatedPermissions "User.Read" `
+                                                -requiredDelegatedPermissions "User.Read|offline_access" `
 
    $requiredResourcesAccess.Add($requiredPermissions)
 
@@ -326,14 +358,14 @@ Function ConfigureApplications
    # Update config file for 'client'
    $configFile = $pwd.Path + "\..\ProfileSPA\src\utils\authConfig.js"
    Write-Host "Updating the sample code ($configFile)"
-   $dictionary = @{ "ClientId" = $serviceAadApplication.AppId;"ResourceScope" = 'https://'+$tenantName+"/ProfileAPIandSPA/access_as_user";"ResourceUri" = $serviceAadApplication.HomePage };
+   $dictionary = @{ "Enter the Client Id (aka 'Application ID')" = $serviceAadApplication.AppId;"Enter the TodoList Web APIs base address, e.g. 'https://localhost:44351/api/todolist/'" = 'https://'+$tenantName+"/ProfileAPIandSPA/access_as_user";"Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{clientId}/access_as_user'" = $serviceAadApplication.HomePage+'api/profile/' };
    ReplaceInTextFile -configFilePath $configFile -dictionary $dictionary
    Write-Host ""
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
    Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
    Write-Host "- For 'service'"
    Write-Host "  - Navigate to '$servicePortalUrl'"
-   Write-Host "  - Navigate to the Authentication blade, click 'Add a platform', choose 'Web' and register your return uri i.e. http://localhost:3000" -ForegroundColor Red 
+   Write-Host "  - Navigate to the Authentication blade, click 'Add a platform', choose 'Web' and register your return uri i.e. http://localhost:3000, then enable 'implicit flow'" -ForegroundColor Red 
    Write-Host "  - Navigate to the Expose an API blade and change the Application ID URI to use the https pattern. i.e. https://<tenant_domain>/<app_name>" -ForegroundColor Red 
    Write-Host "  - Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'." -ForegroundColor Red 
    Write-Host "  - Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2." -ForegroundColor Red 

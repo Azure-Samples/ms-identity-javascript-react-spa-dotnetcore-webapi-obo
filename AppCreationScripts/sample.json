@@ -13,10 +13,11 @@
       "Name": "ProfileAPIandSPA",
       "Kind": "WebApi",
       "HomePage": "https://localhost:44351/",
+      "PasswordCredentials": "Auto",
       "RequiredResourcesAccess": [
         {
           "Resource": "Microsoft Graph",
-          "DelegatedPermissions": [ "User.Read" ]
+          "DelegatedPermissions": [ "User.Read", "offline_access" ]
         },
         {
 					"Resource": "service",
@@ -25,7 +26,7 @@
       ],
       "ManualSteps": [
         {
-          "Comment": "Navigate to the Authentication blade, click 'Add a platform', choose 'Web' and register your return uri i.e. http://localhost:3000"
+          "Comment": "Navigate to the Authentication blade, click 'Add a platform', choose 'Web' and register your return uri i.e. http://localhost:3000, then enable 'implicit flow'"
         },
         {
           "Comment": "Navigate to the Expose an API blade and change the Application ID URI to use the https pattern. i.e. https://<tenant_domain>/<app_name>"
@@ -66,16 +67,16 @@
       "SettingFile": "\\..\\ProfileSPA\\src\\utils\\authConfig.js",
       "Mappings": [
         {
-          "key": "ClientId",
+          "key": "Enter the Client Id (aka 'Application ID')",
           "value": "service.AppId"
         },
         {
-          "key": "ResourceScope",
+          "key": "Enter the TodoList Web APIs base address, e.g. 'https://localhost:44351/api/todolist/'",
           "value": "'https://'+$tenantName+\"/ProfileAPIandSPA/access_as_user\""
         },
         {
-          "key": "ResourceUri",
-          "value": "service.HomePage"
+          "key": "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{clientId}/access_as_user'",
+          "value": "service.HomePage+'api/profile/'"
         }
       ]
     }
