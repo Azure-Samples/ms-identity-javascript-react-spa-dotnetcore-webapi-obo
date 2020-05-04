@@ -21,8 +21,6 @@ This sample demonstrates a React & Redux single-page application allowing a user
 
 The API call to MS Graph API is made using the [MS Graph SDK](https://docs.microsoft.com/en-us/graph/sdks/sdks-overview).
 
-
-
 ### Scenario
 
 - The sample implements an **onboarding** scenario where a profile is created for a new user whose fields are pre-populated by the available information about the user on MS Graph API.
@@ -202,7 +200,7 @@ There are two projects in this sample. To register these projects, you can:
 1. Find the app key `clientId` and replace the existing value with the application ID (clientId) of the `ProfileAPIandSPA` application copied from the Azure portal.
 1. Find the app key `redirectUri` and replace the existing value with the base address of the ProfileSPA project (by default `http://localhost:3000/`).
 1. Find the app key `resourceUri` and replace the existing value with the base address of the ProfileAPI project (by default `https://localhost:44351/api/profile/`).
-1. Find the app key `resourceScope` and replace the existing value with *Scope* you created earlier `https://{tenant-domain}/{app-name}`.
+1. Find the app key `resourceScope` and replace the existing value with *Scope* you created earlier `https://{tenant-domain}/access_as_user`.
 
 ### Run the sample
 
