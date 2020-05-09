@@ -145,18 +145,17 @@ There are two projects in this sample. To register these projects, you can:
    - Type a key description (of instance `app secret`),
    - Select a key duration of either **In 1 year**, **In 2 years**, or **Never Expires**.
    - When you press the **Add** button, the key value will be displayed, copy, and save the value in a safe location.
-   - You'll need this key later to configure the project in Visual Studio. This key value will not be displayed again, nor retrievable by any other means,
+   - You'll need this key later to configure the project. This key value will not be displayed again, nor retrievable by any other means,
      so record it as soon as it is visible from the Azure portal.
 1. Select the **API permissions** section
    - Click the **Add a permission** button and then,
    - Ensure that the **Microsoft APIs** tab is selected
    - In the *Commonly used Microsoft APIs* section, click on **Microsoft Graph**
    - In the **Delegated permissions** section, ensure that the right permissions are checked: **User.Read** and **offline_access**. Use the search box if necessary.
-   - Select the **Add permissions** button
-    it, users will be presented a consent screen enabling them to consent to using the web api.
+   - Select the **Add permissions** button.
 1. Select the **Expose an API** section, and:
+   - Click **Set** next to the Application ID URI to generate a URI that is unique for this app (in the form of `api://{clientId}`).
    - Select **Add a scope**
-   - Change the Application ID URI to the **https** pattern, [check AzureADandPersonalMicrosoftAccount restrictions](https://docs.microsoft.com/en-us/azure/active-directory/develop/supported-accounts-validation), (https://{tenant-domain}/{app-name}) and select **Save and Continue**.
    - Enter the following parameters
      - for **Scope name** use `access_as_user`
      - Keep **Admins and users** for **Who can consent**
@@ -172,15 +171,16 @@ There are two projects in this sample. To register these projects, you can:
 1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the configuration file for this project.
 1. From the app's Overview page, select the **Authentication** section.
    - Click **Add a platform** button.
-   - Select **Web Applications** on the right blade.
+   - Select **Single-page Applications** on the right blade.
    - Add a **Redirect URIs**, for instance **http://localhost:3000**.
+   - Enable **Implicit Flow** by checking the boxes for **Access Tokens** and **Id Tokens**I
    - Click **Configure**.
 1. Select the **API permissions** section
    - Click the **Add a permission** button and then,
    - Ensure that the **My APIs** tab is selected
-   - In the list of APIs, select the `ProfileAPIandSPA` API, or the name you entered for the Web API.
+   - In the list of APIs, select the `ProfileAPIandSPA` API, or the name you entered for the Web API
    - In the **Delegated permissions** section, ensure that the right permissions are checked: **access_as_user**. Use the search box if necessary.
-   - Select the **Add permissions** button
+   - Select the **Add permissions** button.
 
 ##### Configure the service app (ProfileAPI) to use your app registration
 
@@ -199,7 +199,7 @@ There are two projects in this sample. To register these projects, you can:
 1. Find the app key `clientId` and replace the existing value with the application ID (clientId) of the `ProfileAPIandSPA` application copied from the Azure portal.
 1. Find the app key `redirectUri` and replace the existing value with the base address of the ProfileSPA project (by default `http://localhost:3000/`).
 1. Find the app key `resourceUri` and replace the existing value with the base address of the ProfileAPI project (by default `https://localhost:44351/api/profile/`).
-1. Find the app key `resourceScope` and replace the existing value with *Scope* you created earlier `https://{tenant-domain}/access_as_user`.
+1. Find the app key `resourceScope` and replace the existing value with *Scope* you created earlier `api://{client_id}/access_as_user`.
 
 ### Run the sample
 

@@ -59,8 +59,6 @@ namespace ProfileAPI
                 app.UseHsts();
             }
 
-            app.UseStaticFiles();
-
             app.UseCors("default");
             app.UseHttpsRedirection();
             app.UseRouting();
