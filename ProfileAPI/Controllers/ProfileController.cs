@@ -19,7 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Graph;
 using ProfileAPI.Models;
 using ProfileAPI.Utils;
-
+using Newtonsoft.Json;
 
 namespace ProfileAPI.Controllers
 {
@@ -74,25 +74,36 @@ namespace ProfileAPI.Controllers
             {
                 var profile = CallGraphApiOnBehalfOfUser().GetAwaiter().GetResult();
 
-                profileItem.Id = profile.Id;
-                profileItem.UserPrincipalName = profile.UserPrincipalName;
-                profileItem.GivenName = profile.GivenName;
-                profileItem.Surname = profile.Surname;
-                profileItem.JobTitle = profile.JobTitle;
-                profileItem.MobilePhone = profile.MobilePhone;
-                profileItem.PreferredLanguage = profile.PreferredLanguage;
+                if (profile is string)
+                {
+                    if (profile == "interaction required")
+                    {
+                        HttpContext.Response.ContentType = "application/json";
+                        HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        await HttpContext.Response.WriteAsync(JsonConvert.SerializeObject("interaction required"));
+                    }
+                } else
+                {
+                    profileItem.Id = profile.Id;
+                    profileItem.UserPrincipalName = profile.UserPrincipalName;
+                    profileItem.GivenName = profile.GivenName;
+                    profileItem.Surname = profile.Surname;
+                    profileItem.JobTitle = profile.JobTitle;
+                    profileItem.MobilePhone = profile.MobilePhone;
+                    profileItem.PreferredLanguage = profile.PreferredLanguage;
+                }
             }
             catch (MsalException ex)
             {
-                HttpContext.Response.ContentType = "text/plain";
+                HttpContext.Response.ContentType = "application/json";
                 HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                await HttpContext.Response.WriteAsync("An authentication error occurred while acquiring a token for downstream API\n" + ex.ErrorCode + "\n" + ex.Message);
+                await HttpContext.Response.WriteAsync(JsonConvert.SerializeObject("An authentication error occurred while acquiring a token for downstream API\n" + ex.ErrorCode + "\n" + ex.Message));
             }
             catch (Exception ex)
             {
-                HttpContext.Response.ContentType = "text/plain";
+                HttpContext.Response.ContentType = "application/json";
                 HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                await HttpContext.Response.WriteAsync("An error occurred while calling the downstream API\n" + ex.Message);
+                await HttpContext.Response.WriteAsync(JsonConvert.SerializeObject("An error occurred while calling the downstream API\n" + ex.Message));
             }
 #endif
 
@@ -146,25 +157,22 @@ namespace ProfileAPI.Controllers
         public async Task<dynamic> CallGraphApiOnBehalfOfUser()
         {
             string[] scopes = { "User.Read" };
-
-            dynamic getMe;
-            
+            dynamic response;
             // we use MSAL.NET to get a token to call the API On Behalf Of the current user
             try
             {
                 string accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
                 GraphHelper.Initialize(accessToken);
-
                 User me = await GraphHelper.GetMeAsync();
-                getMe = me;
+                response = me;
             }
             catch (MsalUiRequiredException ex)
             {
                 _tokenAcquisition.ReplyForbiddenWithWwwAuthenticateHeader(scopes, ex);
-                return null;
+                return "interaction required";
             }
 
-            return getMe;
+            return response;
         }
     }
 }

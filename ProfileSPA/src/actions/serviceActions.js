@@ -41,10 +41,16 @@ export const postProfile = (profile) => (dispatch, getState) => {
     }).then(response => response.json())
     .then((response) => {
         console.log(response); 
-        dispatch(updateProfile(response))
+
+        if (response === 'interaction required') {
+            // trigger interaction
+
+        } else {
+            dispatch(updateProfile(response))
+            dispatch(updateUI(2))
+        }
     })
-    .then(() => dispatch(updateUI(2)))
-    .catch(err => console.log(err));
+    .catch(err => console.log(err))
 };
 
 export const putProfile = (profile) => (dispatch, getState) => {

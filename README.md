@@ -151,9 +151,8 @@ There are two projects in this sample. To register these projects, you can:
    - Click the **Add a permission** button and then,
    - Ensure that the **Microsoft APIs** tab is selected
    - In the *Commonly used Microsoft APIs* section, click on **Microsoft Graph**
-   - In the **Delegated permissions** section, ensure that the right permissions are checked: **User.Read**. Use the search box if necessary.
+   - In the **Delegated permissions** section, ensure that the right permissions are checked: **User.Read** and **offline_access**. Use the search box if necessary.
    - Select the **Add permissions** button
-   - [Optional] if you are a tenant admin, and agree to grant the admin consent to the web api, select **Grant admin consent for {your tenant domain}**. If you don't do
     it, users will be presented a consent screen enabling them to consent to using the web api.
 1. Select the **Expose an API** section, and:
    - Select **Add a scope**
@@ -223,7 +222,7 @@ npm start
 
 1. Open your browser and navigate to http://localhost:3000.
 2. Sign-in using the button on top-right corner.
-3. If this is your first time sign-in, you will be redirected to the onboarding page.
+3. If this is your first time sign-in, you will be redirected to the onboarding page (the app will try to make a GET request: if this is the first time, it will fail -you can ignore this).
 4. Hit "Accept" and a new account will be created for you in the database, pre-populated by the available information on MS Graph API.
 5. Submit your changes. When you sign-in next time, the application will recognize you and show you the profile associated with your Id in the database.
 

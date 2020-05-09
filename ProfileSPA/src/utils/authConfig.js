@@ -18,8 +18,8 @@ export const msalApp = new UserAgentApplication({
 
 // Coordinates and required scopes for your web api
 export const apiConfig = {
-    resourceUri: "Enter the TodoList Web APIs base address, e.g. 'https://localhost:44351/api/todolist/'",
-    resourceScope: "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{clientId}/access_as_user'"
+    resourceUri: "Enter the TodoList Web APIs base address, e.g. 'https://localhost:44351/api/profile/'",
+    resourceScope: "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'https://{domain_name}/{app_name}/access_as_user'"
 }
 
 /** 
@@ -27,7 +27,7 @@ export const apiConfig = {
  * visit https://azuread.github.io/microsoft-authentication-library-for-js/docs/msal/modules/_authenticationparameters_.html
  */
 export const loginRequest = {
-    scopes: ["openid", "profile", "User.Read"]
+    scopes: ["openid", "profile", "offline_access", "User.Read"]
 }
 
 // Add here scopes for access token to be used at the API endpoints.

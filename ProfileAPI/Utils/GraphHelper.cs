@@ -21,6 +21,7 @@ namespace ProfileAPI.Utils
 
         public static async Task<User> GetMeAsync()
         {
+
             try
             {
                 // GET /me

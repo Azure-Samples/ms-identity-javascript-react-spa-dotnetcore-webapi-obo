@@ -38,7 +38,8 @@ namespace ProfileAPI
             {
                 builder.AllowAnyOrigin()
                        .AllowAnyMethod()
-                       .AllowAnyHeader();
+                       .AllowAnyHeader()
+                       .WithExposedHeaders("WWW-Authenticate");
             }));
         }
 
@@ -57,6 +58,8 @@ namespace ProfileAPI
             {
                 app.UseHsts();
             }
+
+            app.UseStaticFiles();
 
             app.UseCors("default");
             app.UseHttpsRedirection();
