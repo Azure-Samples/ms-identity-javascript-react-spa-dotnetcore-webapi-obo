@@ -40,8 +40,6 @@ export const postProfile = (profile) => (dispatch, getState) => {
         body: JSON.stringify(profile)
     }).then(response => response.json())
     .then((response) => {
-        console.log(response); 
-
         if (response === 'interaction required') {
             // trigger interaction
 
