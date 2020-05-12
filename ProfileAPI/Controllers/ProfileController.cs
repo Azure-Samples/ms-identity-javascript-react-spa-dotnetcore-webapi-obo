@@ -1,10 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-// The same code for the controller is used in both chapters of the tutorial. 
-// In the first chapter this is just a protected API (ENABLE_OBO is not set)
-// In this chapter, the Web API calls a downstream API on behalf of the user (OBO)
-#define ENABLE_OBO
 using System;
 using System.Linq;
 using System.Net;
@@ -67,7 +63,6 @@ namespace ProfileAPI.Controllers
 
             profileItem.FirstLogin = false;
 
-#if ENABLE_OBO
             // This is a synchronous call, so that the clients know, when they call Get, that the 
             // call to the downstream API (Microsoft Graph) has completed.
             try
@@ -84,7 +79,12 @@ namespace ProfileAPI.Controllers
                     }
                 } else
                 {
-                    profileItem.Id = profile.Id;
+                    // OID is represented in id_token as a 32 digit number, while in MS Graph API, the
+                    // preceeding 0s are omitted. The following operation adds the omitted 0s back.
+                    int x = 32 - profile.Id.Length;
+                    string graphID = new string('0', x) + profile.Id;
+
+                    profileItem.Id = graphID;
                     profileItem.UserPrincipalName = profile.UserPrincipalName;
                     profileItem.GivenName = profile.GivenName;
                     profileItem.Surname = profile.Surname;
@@ -105,7 +105,6 @@ namespace ProfileAPI.Controllers
                 HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 await HttpContext.Response.WriteAsync(JsonConvert.SerializeObject("An error occurred while calling the downstream API\n" + ex.Message));
             }
-#endif
 
             _context.ProfileItems.Add(profileItem);
             await _context.SaveChangesAsync();
@@ -158,6 +157,7 @@ namespace ProfileAPI.Controllers
         {
             string[] scopes = { "User.Read" };
             dynamic response;
+
             // we use MSAL.NET to get a token to call the API On Behalf Of the current user
             try
             {

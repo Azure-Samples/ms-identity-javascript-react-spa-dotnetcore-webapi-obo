@@ -19,7 +19,7 @@ export const msalApp = new UserAgentApplication({
 // Coordinates and required scopes for your web api
 export const apiConfig = {
     resourceUri: "Enter the Web APIs base address, e.g. 'https://localhost:44351/api/profile/'",
-    resourceScope: "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/access_as_user'"
+    resourceScope: "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'"
 }
 
 /** 
@@ -27,10 +27,10 @@ export const apiConfig = {
  * visit https://azuread.github.io/microsoft-authentication-library-for-js/docs/msal/modules/_authenticationparameters_.html
  */
 export const loginRequest = {
-    scopes: ["openid", "profile", "offline_access", "User.Read"]
+    scopes: ["openid", "profile", "User.Read"]
 }
 
 // Add here scopes for access token to be used at the API endpoints.
 export const tokenRequest = {
-    scopes: [apiConfig.resourceScope]
+    scopes: [apiConfig.resourceScope, "offline_access"]
 }

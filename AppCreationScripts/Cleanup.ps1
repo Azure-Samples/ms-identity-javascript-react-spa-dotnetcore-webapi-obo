@@ -56,9 +56,9 @@ Function Cleanup
     # Removes the applications
     Write-Host "Cleaning-up applications from tenant '$tenantName'"
 
-    Write-Host "Removing 'service' (ProfileAPIandSPA) if needed"
-    Get-AzureADApplication -Filter "DisplayName eq 'ProfileAPIandSPA'"  | ForEach-Object {Remove-AzureADApplication -ObjectId $_.ObjectId }
-    $apps = Get-AzureADApplication -Filter "DisplayName eq 'ProfileAPIandSPA'"
+    Write-Host "Removing 'service' (ProfileAPI) if needed"
+    Get-AzureADApplication -Filter "DisplayName eq 'ProfileAPI'"  | ForEach-Object {Remove-AzureADApplication -ObjectId $_.ObjectId }
+    $apps = Get-AzureADApplication -Filter "DisplayName eq 'ProfileAPI'"
     if ($apps)
     {
         Remove-AzureADApplication -ObjectId $apps.ObjectId
@@ -67,10 +67,26 @@ Function Cleanup
     foreach ($app in $apps) 
     {
         Remove-AzureADApplication -ObjectId $app.ObjectId
-        Write-Host "Removed ProfileAPIandSPA.."
+        Write-Host "Removed ProfileAPI.."
     }
     # also remove service principals of this app
-    Get-AzureADServicePrincipal -filter "DisplayName eq 'ProfileAPIandSPA'" | ForEach-Object {Remove-AzureADServicePrincipal -ObjectId $_.Id -Confirm:$false}
+    Get-AzureADServicePrincipal -filter "DisplayName eq 'ProfileAPI'" | ForEach-Object {Remove-AzureADServicePrincipal -ObjectId $_.Id -Confirm:$false}
+    
+    Write-Host "Removing 'client' (ProfileSPA) if needed"
+    Get-AzureADApplication -Filter "DisplayName eq 'ProfileSPA'"  | ForEach-Object {Remove-AzureADApplication -ObjectId $_.ObjectId }
+    $apps = Get-AzureADApplication -Filter "DisplayName eq 'ProfileSPA'"
+    if ($apps)
+    {
+        Remove-AzureADApplication -ObjectId $apps.ObjectId
+    }
+
+    foreach ($app in $apps) 
+    {
+        Remove-AzureADApplication -ObjectId $app.ObjectId
+        Write-Host "Removed ProfileSPA.."
+    }
+    # also remove service principals of this app
+    Get-AzureADServicePrincipal -filter "DisplayName eq 'ProfileSPA'" | ForEach-Object {Remove-AzureADServicePrincipal -ObjectId $_.Id -Confirm:$false}
     
 }
 

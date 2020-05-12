@@ -130,15 +130,12 @@ There are two projects in this sample. To register these projects, you can:
 
 </details>
 
-> [!NOTE]
-> This sample uses a single Application Registration (i.e. App/Client Id) for both the Web API and the SPA projects.
-
 #### Register the service: ProfileAPI
 
 1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
 1. Select **New registration**.
 1. When the **Register an application page** appears, enter your application's registration information:
-   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `ProfileAPIandSPA`.
+   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `ProfileAPI`.
    - Change **Supported account types** to **Accounts in any organizational directory and personal Microsoft accounts (e.g. Skype, Xbox, Outlook.com)**.
    - Select **Register** to create the application.
 1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the configuration file for this projects.
@@ -167,9 +164,15 @@ There are two projects in this sample. To register these projects, you can:
      - Keep **State** as **Enabled**
      - Select **Add scope**
 
-#### Register the client: ProfileSPA (in the same application registration)
+#### Register the client: ProfileSPA
 
-1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the configuration file for this project.
+1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
+1. Select **New registration**.
+1. When the **Register an application page** appears, enter your application's registration information:
+   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `ProfileSPA`.
+   - Change **Supported account types** to **Accounts in any organizational directory and personal Microsoft accounts (e.g. Skype, Xbox, Outlook.com)**.
+   - Select **Register** to create the application.
+1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the configuration file for this projects.
 1. From the app's Overview page, select the **Authentication** section.
    - Click **Add a platform** button.
    - Select **Single-page Applications** on the right blade.
@@ -179,9 +182,13 @@ There are two projects in this sample. To register these projects, you can:
 1. Select the **API permissions** section
    - Click the **Add a permission** button and then,
    - Ensure that the **My APIs** tab is selected
-   - In the list of APIs, select the `ProfileAPIandSPA` API, or the name you entered for the Web API
+   - In the list of APIs, select the `ProfileAPI` API, or the name you entered for the Web API
    - In the **Delegated permissions** section, ensure that the right permissions are checked: **access_as_user**. Use the search box if necessary.
    - Select the **Add permissions** button.
+1. Now you need to leave the registration for `ProfileSPA` and go back to your app registration for `ProfileAPI`.
+    - From the app's Overview page, select the **Manifest** section.
+    - Find the entry for `KnownClientApplications`, and add the **Application (client) ID** of the `ProfileSPA` application copied from the Azure portal. 
+    i.e. `KnownClientApplications: [ "your-client-id-for-ProfileSPA" ]`
 
 ##### Configure the service app (ProfileAPI) to use your app registration
 
@@ -189,18 +196,18 @@ There are two projects in this sample. To register these projects, you can:
 
 1. Open the `ProfileAPI\appsettings.json` file
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `ProfileAPIandSPA` application copied from the Azure portal.
-1. Find the app key `ClientSecret` and replace the existing value with the Client Secret of the `ProfileAPIandSPA` application copied from the Azure portal.
+1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `ProfileAPI` application copied from the Azure portal.
+1. Find the app key `ClientSecret` and replace the existing value with the Client Secret of the `ProfileAPI` application copied from the Azure portal.
 
 ##### Configure the client app (ProfileSPA) to use your app registration
 
 >In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
 1. Open the `ProfileSPA\src\utils\authConfig.js` file
-1. Find the app key `clientId` and replace the existing value with the application ID (clientId) of the `ProfileAPIandSPA` application copied from the Azure portal.
+1. Find the app key `clientId` and replace the existing value with the application ID (clientId) of the `ProfileSPA` application copied from the Azure portal.
 1. Find the app key `redirectUri` and replace the existing value with the base address of the ProfileSPA project (by default `http://localhost:3000/`).
 1. Find the app key `resourceUri` and replace the existing value with the base address of the ProfileAPI project (by default `https://localhost:44351/api/profile/`).
-1. Find the app key `resourceScope` and replace the existing value with *Scope* you created earlier `api://{client_id}/access_as_user`.
+1. Find the app key `resourceScope` and replace the existing value with *Scope* you created earlier `api://{client_id}/.default`.
 
 ### Run the sample
 

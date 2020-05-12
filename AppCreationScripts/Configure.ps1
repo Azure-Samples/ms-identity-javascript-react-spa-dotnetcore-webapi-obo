@@ -257,15 +257,15 @@ Function ConfigureApplications
     $user = Get-AzureADUser -ObjectId $creds.Account.Id
 
    # Create the service AAD application
-   Write-Host "Creating the AAD application (ProfileAPIandSPA)"
+   Write-Host "Creating the AAD application (ProfileAPI)"
    # Get a 2 years application key for the service Application
    $pw = ComputePassword
    $fromDate = [DateTime]::Now;
    $key = CreateAppKey -fromDate $fromDate -durationInYears 2 -pw $pw
    $serviceAppKey = $pw
    # create the application 
-   $serviceAadApplication = New-AzureADApplication -DisplayName "ProfileAPIandSPA" `
-                                                   -HomePage "https://localhost:44351/" `
+   $serviceAadApplication = New-AzureADApplication -DisplayName "ProfileAPI" `
+                                                   -HomePage "https://localhost:44351/api/profile/" `
                                                    -AvailableToOtherTenants $True `
                                                    -PasswordCredentials $key `
                                                    -PublicClient $False
@@ -302,9 +302,9 @@ Function ConfigureApplications
         {
             # Add scope
             $scope = CreateScope -value "access_as_user"  `
-                -userConsentDisplayName "Access ProfileAPIandSPA"  `
-                -userConsentDescription "Allow the application to access ProfileAPIandSPA on your behalf."  `
-                -adminConsentDisplayName "Access ProfileAPIandSPA"  `
+                -userConsentDisplayName "Access ProfileAPI"  `
+                -userConsentDescription "Allow the application to access ProfileAPI on your behalf."  `
+                -adminConsentDisplayName "Access ProfileAPI"  `
                 -adminConsentDescription "Allows the app to have the same access to information in the directory on behalf of the signed-in user."
             
             $scopes.Add($scope)
@@ -314,12 +314,12 @@ Function ConfigureApplications
     # add/update scopes
     Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -OAuth2Permission $scopes
 
-   Write-Host "Done creating the service application (ProfileAPIandSPA)"
+   Write-Host "Done creating the service application (ProfileAPI)"
 
    # URL of the AAD application in the Azure portal
    # Future? $servicePortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$serviceAadApplication.AppId+"/objectId/"+$serviceAadApplication.ObjectId+"/isMSAApp/"
    $servicePortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$serviceAadApplication.AppId+"/objectId/"+$serviceAadApplication.ObjectId+"/isMSAApp/"
-   Add-Content -Value "<tr><td>service</td><td>$currentAppId</td><td><a href='$servicePortalUrl'>ProfileAPIandSPA</a></td></tr>" -Path createdApps.html
+   Add-Content -Value "<tr><td>service</td><td>$currentAppId</td><td><a href='$servicePortalUrl'>ProfileAPI</a></td></tr>" -Path createdApps.html
 
    $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.RequiredResourceAccess]
 
@@ -330,21 +330,65 @@ Function ConfigureApplications
 
    $requiredResourcesAccess.Add($requiredPermissions)
 
-   # Add Required Resources Access (from 'service' to 'service')
-   Write-Host "Getting access from 'service' to 'service'"
-   $requiredPermissions = GetRequiredPermissions -applicationDisplayName "ProfileAPIandSPA" `
+
+   Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -RequiredResourceAccess $requiredResourcesAccess
+   Write-Host "Granted permissions."
+
+   # Create the client AAD application
+   Write-Host "Creating the AAD application (ProfileSPA)"
+   # create the application 
+   $clientAadApplication = New-AzureADApplication -DisplayName "ProfileSPA" `
+                                                  -HomePage "http://localhost:3000" `
+                                                  -ReplyUrls "http://localhost:3000" `
+                                                  -IdentifierUris "https://$tenantName/ProfileSPA" `
+                                                  -AvailableToOtherTenants $True `
+                                                  -Oauth2AllowImplicitFlow $true `
+                                                  -PublicClient $False
+
+   # create the service principal of the newly created application 
+   $currentAppId = $clientAadApplication.AppId
+   $clientServicePrincipal = New-AzureADServicePrincipal -AppId $currentAppId -Tags {WindowsAzureActiveDirectoryIntegratedApp}
+
+   # add the user running the script as an app owner if needed
+   $owner = Get-AzureADApplicationOwner -ObjectId $clientAadApplication.ObjectId
+   if ($owner -eq $null)
+   { 
+        Add-AzureADApplicationOwner -ObjectId $clientAadApplication.ObjectId -RefObjectId $user.ObjectId
+        Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($clientServicePrincipal.DisplayName)'"
+   }
+
+
+   Write-Host "Done creating the client application (ProfileSPA)"
+
+   # URL of the AAD application in the Azure portal
+   # Future? $clientPortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.ObjectId+"/isMSAApp/"
+   $clientPortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.ObjectId+"/isMSAApp/"
+   Add-Content -Value "<tr><td>client</td><td>$currentAppId</td><td><a href='$clientPortalUrl'>ProfileSPA</a></td></tr>" -Path createdApps.html
+
+   $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.RequiredResourceAccess]
+
+   # Add Required Resources Access (from 'client' to 'Microsoft Graph')
+   Write-Host "Getting access from 'client' to 'Microsoft Graph'"
+   $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Microsoft Graph" `
+                                                -requiredDelegatedPermissions "User.Read" `
+
+   $requiredResourcesAccess.Add($requiredPermissions)
+
+   # Add Required Resources Access (from 'client' to 'service')
+   Write-Host "Getting access from 'client' to 'service'"
+   $requiredPermissions = GetRequiredPermissions -applicationDisplayName "ProfileAPI" `
                                                 -requiredDelegatedPermissions "access_as_user" `
 
    $requiredResourcesAccess.Add($requiredPermissions)
 
 
-   Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -RequiredResourceAccess $requiredResourcesAccess
+   Set-AzureADApplication -ObjectId $clientAadApplication.ObjectId -RequiredResourceAccess $requiredResourcesAccess
    Write-Host "Granted permissions."
 
    # Configure known client applications for service 
    Write-Host "Configure known client applications for the 'service'"
    $knowApplications = New-Object System.Collections.Generic.List[System.String]
-    $knowApplications.Add($serviceAadApplication.AppId)
+    $knowApplications.Add($clientAadApplication.AppId)
    Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -KnownClientApplications $knowApplications
    Write-Host "Configured."
 
@@ -358,16 +402,21 @@ Function ConfigureApplications
    # Update config file for 'client'
    $configFile = $pwd.Path + "\..\ProfileSPA\src\utils\authConfig.js"
    Write-Host "Updating the sample code ($configFile)"
-   $dictionary = @{ "Enter the Client Id (aka 'Application ID')" = $serviceAadApplication.AppId;"Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/access_as_user'" = 'https://'+$tenantName+"/ProfileAPIandSPA/access_as_user";"Enter the Web APIs base address, e.g. 'https://localhost:44351/api/profile/'" = ("api://"+$serviceAadApplication.AppId+"/access_as_user") };
+   $dictionary = @{ "Enter the Client Id (aka 'Application ID')" = $serviceAadApplication.AppId;"Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'" = ("api://"+$serviceAadApplication.AppId+"/access_as_user");"Enter the Web APIs base address, e.g. 'https://localhost:44351/api/profile/'" = $serviceAadApplication.HomePage };
    ReplaceInTextFile -configFilePath $configFile -dictionary $dictionary
    Write-Host ""
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
    Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
    Write-Host "- For 'service'"
    Write-Host "  - Navigate to '$servicePortalUrl'"
-   Write-Host "  - Navigate to the Authentication blade, click 'Add a platform', choose 'Single-page application' and register your return uri i.e. http://localhost:3000, then enable 'implicit flow' by checking boxes for 'Access Tokens' and 'Id Tokens'" -ForegroundColor Red 
    Write-Host "  - Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'." -ForegroundColor Red 
    Write-Host "  - Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2." -ForegroundColor Red 
+   Write-Host "  - Navigate to the Manifest page, find the entry for 'KnownClientApplications' and add the clientId of ProfileSPA." -ForegroundColor Red 
+   Write-Host "- For 'client'"
+   Write-Host "  - Navigate to '$clientPortalUrl'"
+   Write-Host "  - Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'." -ForegroundColor Red 
+   Write-Host "  - Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2." -ForegroundColor Red 
+   Write-Host "  - Navigate 'ProfileSPA/src/utils/authConfig.js' and convert the resourceScope to the form 'api://{client_id}/.default'" -ForegroundColor Red 
 
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
      

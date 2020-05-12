@@ -10,14 +10,40 @@
   "AADApps": [
     {
       "Id": "service",
-      "Name": "ProfileAPIandSPA",
+      "Name": "ProfileAPI",
       "Kind": "WebApi",
-      "HomePage": "https://localhost:44351/",
       "PasswordCredentials": "Auto",
+      "Audience": "AzureADMultipleOrgs",
+      "HomePage": "https://localhost:44351/api/profile/",
       "RequiredResourcesAccess": [
         {
           "Resource": "Microsoft Graph",
           "DelegatedPermissions": [ "User.Read", "offline_access" ]
+        }
+      ],
+      "ManualSteps": [
+        {
+          "Comment": "Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'."
+        },
+        {
+          "Comment": "Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2."
+        },
+        {
+          "Comment": "Navigate to the Manifest page, find the entry for 'KnownClientApplications' and add the clientId of ProfileSPA."
+        }
+      ]
+    },
+    {
+      "Id": "client",
+      "Name": "ProfileSPA",
+      "Kind": "SinglePageApplication",
+      "Audience": "AzureADMultipleOrgs",
+      "HomePage": "http://localhost:3000",
+      "ReplyUrls": "http://localhost:3000",
+      "RequiredResourcesAccess": [
+        {
+          "Resource": "Microsoft Graph",
+          "DelegatedPermissions": [ "User.Read" ]
         },
         {
 					"Resource": "service",
@@ -26,13 +52,13 @@
       ],
       "ManualSteps": [
         {
-          "Comment": "Navigate to the Authentication blade, click 'Add a platform', choose 'Single-page application' and register your return uri i.e. http://localhost:3000, then enable 'implicit flow' by checking boxes for 'Access Tokens' and 'Id Tokens'"
-        },
-        {
           "Comment": "Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'."
         },
         {
           "Comment": "Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2."
+        },
+        {
+          "Comment": "Navigate 'ProfileSPA/src/utils/authConfig.js' and convert the resourceScope to the form 'api://{client_id}/.default'"
         }
       ]
     }
@@ -68,12 +94,12 @@
           "value": "service.AppId"
         },
         {
-          "key": "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/access_as_user'",
-          "value": "'https://'+$tenantName+\"/ProfileAPIandSPA/access_as_user\""
+          "key": "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'",
+          "value": "service.Scope"
         },
         {
           "key": "Enter the Web APIs base address, e.g. 'https://localhost:44351/api/profile/'",
-          "value": "service.Scope"
+          "value": "service.HomePage"
         }
       ]
     }
