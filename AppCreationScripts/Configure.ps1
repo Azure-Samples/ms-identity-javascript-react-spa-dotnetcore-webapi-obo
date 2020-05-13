@@ -402,7 +402,7 @@ Function ConfigureApplications
    # Update config file for 'client'
    $configFile = $pwd.Path + "\..\ProfileSPA\src\utils\authConfig.js"
    Write-Host "Updating the sample code ($configFile)"
-   $dictionary = @{ "Enter the Client Id (aka 'Application ID')" = $serviceAadApplication.AppId;"Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'" = ("api://"+$serviceAadApplication.AppId+"/access_as_user");"Enter the Web APIs base address, e.g. 'https://localhost:44351/api/profile/'" = $serviceAadApplication.HomePage };
+   $dictionary = @{ "Enter the Client Id (aka 'Application ID')" = $clientAadApplication.AppId;"Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'" = ("api://"+$serviceAadApplication.AppId+"/access_as_user");"Enter the Web APIs base address, e.g. 'https://localhost:44351/api/profile/'" = $serviceAadApplication.HomePage };
    ReplaceInTextFile -configFilePath $configFile -dictionary $dictionary
    Write-Host ""
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
@@ -416,7 +416,7 @@ Function ConfigureApplications
    Write-Host "  - Navigate to '$clientPortalUrl'"
    Write-Host "  - Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'." -ForegroundColor Red 
    Write-Host "  - Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2." -ForegroundColor Red 
-   Write-Host "  - Navigate 'ProfileSPA/src/utils/authConfig.js' and convert the resourceScope to the form 'api://{client_id}/.default'" -ForegroundColor Red 
+   Write-Host "  - Navigate 'ProfileSPA/src/utils/authConfig.js' and convert the 'resourceScope' value into the form 'api://{client_id}/.default'" -ForegroundColor Red 
 
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
      

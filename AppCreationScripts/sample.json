@@ -58,7 +58,7 @@
           "Comment": "Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2."
         },
         {
-          "Comment": "Navigate 'ProfileSPA/src/utils/authConfig.js' and convert the resourceScope to the form 'api://{client_id}/.default'"
+          "Comment": "Navigate 'ProfileSPA/src/utils/authConfig.js' and convert the 'resourceScope' value into the form 'api://{client_id}/.default'"
         }
       ]
     }
@@ -91,7 +91,7 @@
       "Mappings": [
         {
           "key": "Enter the Client Id (aka 'Application ID')",
-          "value": "service.AppId"
+          "value": "client.AppId"
         },
         {
           "key": "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'",
