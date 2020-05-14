@@ -18,8 +18,8 @@ export const msalApp = new UserAgentApplication({
 
 // Coordinates and required scopes for your web api
 export const apiConfig = {
-    resourceUri: "Enter the TodoList Web APIs base address, e.g. 'https://localhost:44351/api/todolist/'",
-    resourceScope: "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{clientId}/access_as_user'"
+    resourceUri: "Enter the Profile APIs base address, e.g. 'https://contoso.onmicrosoft.com/ProfileAPI'",
+    resourceScope: "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'https://contoso.onmicrosoft.com/ProfileAPI/access_as_user'"
 }
 
 /** 
