@@ -38,7 +38,8 @@ namespace ProfileAPI
             {
                 builder.AllowAnyOrigin()
                        .AllowAnyMethod()
-                       .AllowAnyHeader();
+                       .AllowAnyHeader()
+                       .WithExposedHeaders("WWW-Authenticate");
             }));
         }
 

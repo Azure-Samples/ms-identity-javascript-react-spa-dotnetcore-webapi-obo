@@ -7,9 +7,6 @@ param(
     [string] $azureEnvironmentName
 )
 
-#Requires -Modules AzureAD
-
-
 if ($null -eq (Get-Module -ListAvailable -Name "AzureAD")) { 
     Install-Module "AzureAD" -Scope CurrentUser 
 } 
@@ -75,9 +72,9 @@ Function Cleanup
     # also remove service principals of this app
     Get-AzureADServicePrincipal -filter "DisplayName eq 'ProfileAPI'" | ForEach-Object {Remove-AzureADServicePrincipal -ObjectId $_.Id -Confirm:$false}
     
-    Write-Host "Removing 'client' (ProfileSPAApp) if needed"
-    Get-AzureADApplication -Filter "DisplayName eq 'ProfileSPAApp'"  | ForEach-Object {Remove-AzureADApplication -ObjectId $_.ObjectId }
-    $apps = Get-AzureADApplication -Filter "DisplayName eq 'ProfileSPAApp'"
+    Write-Host "Removing 'client' (ProfileSPA) if needed"
+    Get-AzureADApplication -Filter "DisplayName eq 'ProfileSPA'"  | ForEach-Object {Remove-AzureADApplication -ObjectId $_.ObjectId }
+    $apps = Get-AzureADApplication -Filter "DisplayName eq 'ProfileSPA'"
     if ($apps)
     {
         Remove-AzureADApplication -ObjectId $apps.ObjectId
@@ -86,10 +83,10 @@ Function Cleanup
     foreach ($app in $apps) 
     {
         Remove-AzureADApplication -ObjectId $app.ObjectId
-        Write-Host "Removed ProfileSPAApp.."
+        Write-Host "Removed ProfileSPA.."
     }
     # also remove service principals of this app
-    Get-AzureADServicePrincipal -filter "DisplayName eq 'ProfileSPAApp'" | ForEach-Object {Remove-AzureADServicePrincipal -ObjectId $_.Id -Confirm:$false}
+    Get-AzureADServicePrincipal -filter "DisplayName eq 'ProfileSPA'" | ForEach-Object {Remove-AzureADServicePrincipal -ObjectId $_.Id -Confirm:$false}
     
 }
 

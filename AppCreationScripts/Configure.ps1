@@ -7,8 +7,6 @@ param(
     [string] $azureEnvironmentName
 )
 
-#Requires -Modules AzureAD
-
 <#
  This script creates the Azure AD applications needed for this sample and updates the configuration files
  for the visual Studio projects from the data in the Azure AD applications.
@@ -267,10 +265,10 @@ Function ConfigureApplications
    $serviceAppKey = $pw
    # create the application 
    $serviceAadApplication = New-AzureADApplication -DisplayName "ProfileAPI" `
+                                                   -HomePage "https://localhost:44351/api/profile/" `
                                                    -AvailableToOtherTenants $True `
                                                    -PasswordCredentials $key `
                                                    -PublicClient $False
-
    $serviceIdentifierUri = 'api://'+$serviceAadApplication.AppId
    Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -IdentifierUris $serviceIdentifierUri
 
@@ -337,12 +335,12 @@ Function ConfigureApplications
    Write-Host "Granted permissions."
 
    # Create the client AAD application
-   Write-Host "Creating the AAD application (ProfileSPAApp)"
+   Write-Host "Creating the AAD application (ProfileSPA)"
    # create the application 
-   $clientAadApplication = New-AzureADApplication -DisplayName "ProfileSPAApp" `
-                                                  -HomePage "https://localhost:44351/" `
+   $clientAadApplication = New-AzureADApplication -DisplayName "ProfileSPA" `
+                                                  -HomePage "http://localhost:3000" `
                                                   -ReplyUrls "http://localhost:3000" `
-                                                  -IdentifierUris "https://$tenantName/ProfileSPAApp" `
+                                                  -IdentifierUris "https://$tenantName/ProfileSPA" `
                                                   -AvailableToOtherTenants $True `
                                                   -Oauth2AllowImplicitFlow $true `
                                                   -PublicClient $False
@@ -360,14 +358,21 @@ Function ConfigureApplications
    }
 
 
-   Write-Host "Done creating the client application (ProfileSPAApp)"
+   Write-Host "Done creating the client application (ProfileSPA)"
 
    # URL of the AAD application in the Azure portal
    # Future? $clientPortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.ObjectId+"/isMSAApp/"
    $clientPortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.ObjectId+"/isMSAApp/"
-   Add-Content -Value "<tr><td>client</td><td>$currentAppId</td><td><a href='$clientPortalUrl'>ProfileSPAApp</a></td></tr>" -Path createdApps.html
+   Add-Content -Value "<tr><td>client</td><td>$currentAppId</td><td><a href='$clientPortalUrl'>ProfileSPA</a></td></tr>" -Path createdApps.html
 
    $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.RequiredResourceAccess]
+
+   # Add Required Resources Access (from 'client' to 'Microsoft Graph')
+   Write-Host "Getting access from 'client' to 'Microsoft Graph'"
+   $requiredPermissions = GetRequiredPermissions -applicationDisplayName "Microsoft Graph" `
+                                                -requiredDelegatedPermissions "User.Read" `
+
+   $requiredResourcesAccess.Add($requiredPermissions)
 
    # Add Required Resources Access (from 'client' to 'service')
    Write-Host "Getting access from 'client' to 'service'"
@@ -397,7 +402,7 @@ Function ConfigureApplications
    # Update config file for 'client'
    $configFile = $pwd.Path + "\..\ProfileSPA\src\utils\authConfig.js"
    Write-Host "Updating the sample code ($configFile)"
-   $dictionary = @{ "Enter the Client Id (aka 'Application ID')" = $serviceAadApplication.AppId;"Enter the Profile APIs base address, e.g. 'https://contoso.onmicrosoft.com/ProfileAPI'" = '$serviceIdentifierUri';"Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'https://contoso.onmicrosoft.com/ProfileAPI/access_as_user'" = '$serviceIdentifierUri'+'/access_as_user' };
+   $dictionary = @{ "Enter the Client Id (aka 'Application ID')" = $clientAadApplication.AppId;"Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'" = ("api://"+$serviceAadApplication.AppId+"/access_as_user");"Enter the Web APIs base address, e.g. 'https://localhost:44351/api/profile/'" = $serviceAadApplication.HomePage };
    ReplaceInTextFile -configFilePath $configFile -dictionary $dictionary
    Write-Host ""
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
@@ -406,10 +411,12 @@ Function ConfigureApplications
    Write-Host "  - Navigate to '$servicePortalUrl'"
    Write-Host "  - Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'." -ForegroundColor Red 
    Write-Host "  - Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2." -ForegroundColor Red 
+   Write-Host "  - Navigate to the Manifest page, find the entry for 'KnownClientApplications' and add the clientId of ProfileSPA." -ForegroundColor Red 
    Write-Host "- For 'client'"
    Write-Host "  - Navigate to '$clientPortalUrl'"
    Write-Host "  - Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'." -ForegroundColor Red 
-   Write-Host "  - Navigate to the Expose an API blade and change the Application ID URI to use the https pattern. i.e. https://<tenant_domain>/ProfileAPI" -ForegroundColor Red 
+   Write-Host "  - Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2." -ForegroundColor Red 
+   Write-Host "  - Navigate 'ProfileSPA/src/utils/authConfig.js' and convert the 'resourceScope' value into the form 'api://{client_id}/.default'" -ForegroundColor Red 
 
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
      

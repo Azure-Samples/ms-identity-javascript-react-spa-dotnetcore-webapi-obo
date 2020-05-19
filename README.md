@@ -1,5 +1,6 @@
 ---
 page_type: sample
+author: derisen
 languages:
 - javascript
 - csharp
@@ -19,22 +20,19 @@ urlFragment: "ms-identity-javascript-react-spa-dotnetcore-webapi-obo"
 
 This sample demonstrates a React & Redux single-page application which lets a user authenticate and then obtain an access token to call an ASP.NET Core Web API, protected by [Azure AD](https://azure.microsoft.com/services/active-directory/). The Web API then calls the [MS Graph API](https://developer.microsoft.com/graph) on the user's behalf using the [on-behalf-of flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow).
 
-The Wen APIs call to MS Graph API is made using the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
+
+The Web APIs call to MS Graph API is made using the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
 
 > Looking for previous versions of this code sample? Check out the tags on the [releases](../../releases) GitHub page.
 
 ### Scenario
 
-- The sample implements an **onboarding** scenario where a profile is created for a new user whose fields are pre-populated by the available information about that user in MS Graph.
-- `ProfileSPA` app uses [MSAL.js](https://github.com/AzureAD/microsoft-authentication-library-for-js) to authenticate the user and [React-Redux](https://react-redux.js.org/) to store id and access tokens.
-- Once the user authenticates, `ProfileSPA` obtains an [access token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from Azure Active Directory (Azure AD) for the `ProfileAPI` Web API.
-- The access token is then used to authorize the `ProfileAPI` to call the MS Graph API **on user's behalf**. In order to call MS Graph , `ProfileAPI` uses the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
+
 - To protect its endpoint and accept only the authorized calls, the `ProfileAPI` uses the [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) library.
 
 ![Topology](./ReadmeFiles/topology.png)
 
 > [!NOTE]
-> This sample is configured to allow sign-ins with **Personal Microsoft Accounts** ONLY using the `/consumers` endpoint. Learn more about [supported accounts](https://docs.microsoft.com/azure/active-directory/develop/v2-supported-account-types) types and [validation differences between them](https://docs.microsoft.com/azure/active-directory/develop/supported-accounts-validation).
 
 ### Contents
 
@@ -129,21 +127,16 @@ There are two projects in this sample. Each needs to be separately registered in
    > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
    > The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
 
-1. Open the Visual Studio solution and click start to run the code.
+
 
 </details>
-
-Follow the steps below to manually walk through the steps to register and configure the applications in the Azure portal.
-
-> [!NOTE]
-> This sample uses a single Application Registration (i.e. App/Client Id) for both the Web API and the SPA projects.
 
 #### Register the service: ProfileAPI
 
 1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
 1. Select **New registration**.
 1. When the **Register an application page** appears, enter your application's registration information:
-   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `ProfileAPIandSPA`.
+   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `ProfileAPI`.
    - Change **Supported account types** to **Accounts in any organizational directory and personal Microsoft accounts (e.g. Skype, Xbox, Outlook.com)**.
    - Select **Register** to create the application.
 1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the configuration file for this projects.
@@ -151,19 +144,16 @@ Follow the steps below to manually walk through the steps to register and config
    - Type a key description (of instance `app secret`),
    - Select a key duration of either **In 1 year**, **In 2 years**, or **Never Expires**.
    - When you press the **Add** button, the key value will be displayed, copy, and save the value in a safe location.
-   - You'll need this key later to configure the project in Visual Studio. This key value will not be displayed again, nor retrievable by any other means,
+   - You'll need this key later to configure the project. This key value will not be displayed again, nor retrievable by any other means,
      so record it as soon as it is visible from the Azure portal.
 1. Select the **API permissions** section
    - Click the **Add a permission** button and then,
    - Ensure that the **Microsoft APIs** tab is selected
    - In the *Commonly used Microsoft APIs* section, click on **Microsoft Graph**
-   - In the **Delegated permissions** section, ensure that the right permissions are checked: **User.Read**. Use the search box if necessary.
-   - Select the **Add permissions** button
-   - [Optional] if you are a tenant admin, and agree to grant the admin consent to the web api, select **Grant admin consent for {your tenant domain}**. If you don't do
-    it, users will be presented a consent screen enabling them to consent to using the web api.
+   - Select the **Add permissions** button.
 1. Select the **Expose an API** section, and:
+   - Click **Set** next to the Application ID URI to generate a URI that is unique for this app (in the form of `api://{clientId}`).
    - Select **Add a scope**
-   - Change the Application ID URI to the **https** pattern, [check AzureADandPersonalMicrosoftAccount restrictions](https://docs.microsoft.com/azure/active-directory/develop/supported-accounts-validation), (https://{tenant-domain}/{app-name}) and select **Save and Continue**.
    - Enter the following parameters
      - for **Scope name** use `access_as_user`
      - Keep **Admins and users** for **Who can consent**
@@ -174,20 +164,31 @@ Follow the steps below to manually walk through the steps to register and config
      - Keep **State** as **Enabled**
      - Select **Add scope**
 
-#### Register the client: ProfileSPA (in the same application registration)
+#### Register the client: ProfileSPA
 
-1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the configuration file for this project.
+1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
+1. Select **New registration**.
+1. When the **Register an application page** appears, enter your application's registration information:
+   - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `ProfileSPA`.
+   - Change **Supported account types** to **Accounts in any organizational directory and personal Microsoft accounts (e.g. Skype, Xbox, Outlook.com)**.
+   - Select **Register** to create the application.
+1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the configuration file for this projects.
 1. From the app's Overview page, select the **Authentication** section.
    - Click **Add a platform** button.
-   - Select **Web Applications** on the right blade.
+   - Select **Single-page Applications** on the right blade.
    - Add a **Redirect URIs**, for instance **http://localhost:3000**.
+   - Enable **Implicit Flow** by checking the boxes for **Access Tokens** and **Id Tokens**I
    - Click **Configure**.
 1. Select the **API permissions** section
    - Click the **Add a permission** button and then,
    - Ensure that the **My APIs** tab is selected
-   - In the list of APIs, select the `ProfileAPIandSPA` API, or the name you entered for the Web API.
+   - In the list of APIs, select the `ProfileAPI` API, or the name you entered for the Web API
    - In the **Delegated permissions** section, ensure that the right permissions are checked: **access_as_user**. Use the search box if necessary.
-   - Select the **Add permissions** button
+   - Select the **Add permissions** button.
+1. Now you need to leave the registration for `ProfileSPA` and go back to your app registration for `ProfileAPI`.
+    - From the app's Overview page, select the **Manifest** section.
+    - Find the entry for `KnownClientApplications`, and add the **Application (client) ID** of the `ProfileSPA` application copied from the Azure portal. 
+    i.e. `KnownClientApplications: [ "your-client-id-for-ProfileSPA" ]`
 
 ##### Configure the service app (ProfileAPI) to use your app registration
 
@@ -195,18 +196,18 @@ Follow the steps below to manually walk through the steps to register and config
 
 1. Open the `ProfileAPI\appsettings.json` file
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `ProfileAPIandSPA` application copied from the Azure portal.
-1. Find the app key `ClientSecret` and replace the existing value with the Client Secret of the `ProfileAPIandSPA` application copied from the Azure portal.
+1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `ProfileAPI` application copied from the Azure portal.
+1. Find the app key `ClientSecret` and replace the existing value with the Client Secret of the `ProfileAPI` application copied from the Azure portal.
 
 ##### Configure the client app (ProfileSPA) to use your app registration
 
 >In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
 1. Open the `ProfileSPA\src\utils\authConfig.js` file
-1. Find the app key `clientId` and replace the existing value with the application ID (clientId) of the `ProfileAPIandSPA` application copied from the Azure portal.
+1. Find the app key `clientId` and replace the existing value with the application ID (clientId) of the `ProfileSPA` application copied from the Azure portal.
 1. Find the app key `redirectUri` and replace the existing value with the base address of the ProfileSPA project (by default `http://localhost:3000/`).
 1. Find the app key `resourceUri` and replace the existing value with the base address of the ProfileAPI project (by default `https://localhost:44351/api/profile/`).
-1. Find the app key `resourceScope` and replace the existing value with *Scope* you created earlier `https://{tenant-domain}/access_as_user`.
+1. Find the app key `resourceScope` and replace the existing value with *Scope* you created earlier `api://{client_id}/.default`.
 
 ### Run the sample
 
@@ -229,7 +230,7 @@ npm start
 
 1. Open your browser and navigate to http://localhost:3000.
 2. Sign-in using the button on top-right corner.
-3. If this is your first time sign-in, you will be redirected to the onboarding page.
+3. If this is your first time sign-in, you will be redirected to the onboarding page (the app will try to make a GET request: if this is the first time, it will fail -you can ignore this).
 4. Hit "Accept" and a new account will be created for you in the database, pre-populated by the available information on MS Graph API.
 5. Submit your changes. When you sign-in next time, the application will recognize you and show you the profile associated with your Id in the database.
 

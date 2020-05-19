@@ -13,6 +13,8 @@
       "Name": "ProfileAPI",
       "Kind": "WebApi",
       "PasswordCredentials": "Auto",
+      "Audience": "AzureADMultipleOrgs",
+      "HomePage": "https://localhost:44351/api/profile/",
       "RequiredResourcesAccess": [
         {
           "Resource": "Microsoft Graph",
@@ -78,7 +80,7 @@
       "Mappings": [
         {
           "key": "Enter the Client Id (aka 'Application ID')",
-          "value": "service.AppId"
+          "value": "client.AppId"
         },
         {
           "key": "Enter the Profile APIs base address, e.g. 'https://contoso.onmicrosoft.com/ProfileAPI'",

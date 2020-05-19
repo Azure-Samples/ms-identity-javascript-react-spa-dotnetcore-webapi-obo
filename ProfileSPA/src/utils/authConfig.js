@@ -32,5 +32,5 @@ export const loginRequest = {
 
 // Add here scopes for access token to be used at the API endpoints.
 export const tokenRequest = {
-    scopes: [apiConfig.resourceScope]
+    scopes: [apiConfig.resourceScope, "offline_access"]
 }

@@ -35,6 +35,7 @@ const AuthHOC = WrappedComponent => class AuthProvider extends Component {
 
     async acquireToken() {
         return msalApp.acquireTokenSilent(tokenRequest)
+            .then((response) => response)
             .catch(error => {
                 // Call acquireTokenPopup (popup window) in case of acquireTokenSilent failure
                 // due to consent or interaction required ONLY
