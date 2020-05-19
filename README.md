@@ -7,32 +7,34 @@ products:
 - react
 - redux
 - dotnet
-description: "This sample demonstrates a React & Redux single-page application authorizing an ASP.NET Core Web API to call MS Graph API on its behalf using the MS Graph SDK"
+description: "This sample demonstrates a React & Redux SPA application calling a ASP.NET Core Web API that is secured using Azure Active Directory"
 urlFragment: "ms-identity-javascript-react-spa-dotnetcore-webapi-obo"
 ---
 
-# A React & Redux single-page application authorizing an ASP.NET Core Web API to call MS Graph API on its behalf
+# A React & Redux single-page application authorizing an ASP.NET Core Web API to call MS Graph API on behalf of a signed in user
 
 ## About this sample
 
 ### Overview
 
-This sample demonstrates a React & Redux single-page application allowing a user to authenticate and authorize an ASP.NET Core Web API that was protected by [Azure AD](https://azure.microsoft.com/en-ca/services/active-directory/) to call [MS Graph API](https://developer.microsoft.com/en-us/graph) on its behalf using the AAD [on-behalf-of flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow).
+This sample demonstrates a React & Redux single-page application which lets a user authenticate and then obtain an access token to call an ASP.NET Core Web API, protected by [Azure AD](https://azure.microsoft.com/services/active-directory/). The Web API then calls the [MS Graph API](https://developer.microsoft.com/graph) on the user's behalf using the [on-behalf-of flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow).
 
-The API call to MS Graph API is made using the [MS Graph SDK](https://docs.microsoft.com/en-us/graph/sdks/sdks-overview).
+The Wen APIs call to MS Graph API is made using the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
+
+> Looking for previous versions of this code sample? Check out the tags on the [releases](../../releases) GitHub page.
 
 ### Scenario
 
-- The sample implements an **onboarding** scenario where a profile is created for a new user whose fields are pre-populated by the available information about the user on MS Graph API.
-- ProfileSPA uses [MSAL.js](https://github.com/AzureAD/microsoft-authentication-library-for-js) to authenticate a user and [React-Redux](https://react-redux.js.org/) to store id and access tokens.
-- Once the user authenticates, ProfileSPA obtains an [access token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from Azure Active Directory (Azure AD).
-- The access token is then used to authorize the ProfileAPI to call MS Graph API **on user's behalf**. In order to call MS Graph API, ProfileAPI uses the [MS Graph SDK](https://docs.microsoft.com/en-us/graph/sdks/sdks-overview).
-- To protect its endpoint and accept only the authorized calls, the ProfileAPI uses [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) and [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web).
+- The sample implements an **onboarding** scenario where a profile is created for a new user whose fields are pre-populated by the available information about that user in MS Graph.
+- `ProfileSPA` app uses [MSAL.js](https://github.com/AzureAD/microsoft-authentication-library-for-js) to authenticate the user and [React-Redux](https://react-redux.js.org/) to store id and access tokens.
+- Once the user authenticates, `ProfileSPA` obtains an [access token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from Azure Active Directory (Azure AD) for the `ProfileAPI` Web API.
+- The access token is then used to authorize the `ProfileAPI` to call the MS Graph API **on user's behalf**. In order to call MS Graph , `ProfileAPI` uses the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
+- To protect its endpoint and accept only the authorized calls, the `ProfileAPI` uses the [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) library.
 
 ![Topology](./ReadmeFiles/topology.png)
 
 > [!NOTE]
-> This sample is configured to allow sign-ins with **personal Microsoft accounts** ONLY using the `/consumers` endpoint. Learn more about [supported account](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-supported-account-types) types and [validation differences between them](https://docs.microsoft.com/en-us/azure/active-directory/develop/supported-accounts-validation).
+> This sample is configured to allow sign-ins with **Personal Microsoft Accounts** ONLY using the `/consumers` endpoint. Learn more about [supported accounts](https://docs.microsoft.com/azure/active-directory/develop/v2-supported-account-types) types and [validation differences between them](https://docs.microsoft.com/azure/active-directory/develop/supported-accounts-validation).
 
 ### Contents
 
@@ -54,7 +56,7 @@ The API call to MS Graph API is made using the [MS Graph SDK](https://docs.micro
 - [Node.js](https://nodejs.org/en/download/) must be installed to run this sample.
 - [Dotnet Core SDK](https://dotnet.microsoft.com/download) must be installed to run this sample.
 - An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
-- A **personal Microsoft account**. This sample will not work with work or school accounts.
+- A **personal Microsoft account** is needed. This sample will not work with **work or school accounts**.
 - We recommend the [VS Code](https://code.visualstudio.com/download) for running and debugging this cross-platform application.
 - We recommend the [Redux DevTools](https://github.com/zalmoxisus/redux-devtools-extension) browser extension for monitoring your Redux store.
 
@@ -64,12 +66,15 @@ Using a command line interface such as [VS Code integrated terminal](https://cod
 
 #### Step 1. Clone or download this repository
 
-```console
+From your shell or command line:
+
+```Shell
 git clone https://github.com/Azure-Samples/ms-identity-javascript-react-spa-dotnetcore-webapi-obo.git
 ```
 
-> [!NOTE]
-> Given that the name of the sample is quite long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid file size limitations on Windows.
+or download and extract the repository .zip file.
+
+> Given that the name of the sample is quiet long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid the 256 character path length limitation on Windows.
 
 #### Step 2. Install .NET Core API dependencies
 
@@ -90,19 +95,18 @@ Learn more about [HTTPS in .NET Core](https://docs.microsoft.com/aspnet/core/sec
 #### Step 4. Install Angular SPA dependencies
 
 ```console
-cd ../
 cd ProfileSPA
 npm install
 ```
 
-### Register the sample applications with your Azure Active Directory tenant
+### Step 4:  Register the sample application with your Azure Active Directory tenant
 
-There are two projects in this sample. To register these projects, you can:
+There are two projects in this sample. Each needs to be separately registered in your Azure AD tenant. To register these projects, you can:
 
-- either follow the steps below for manual registration,
+- either follow the steps [Step 2: Register the sample with your Azure Active Directory tenant](#step-2-register-the-sample-with-your-azure-active-directory-tenant) and [Step 3:  Configure the sample to use your Azure AD tenant](#choose-the-azure-ad-tenant-where-you-want-to-create-your-applications)
 - or use PowerShell scripts that:
-  - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you.
-  - modify the configuration files.
+  - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you. Note that this works for Visual Studio only.
+  - modify the Visual Studio projects' configuration files.
 
 <details>
   <summary>Expand this section if you want to use this automation:</summary>
@@ -125,9 +129,11 @@ There are two projects in this sample. To register these projects, you can:
    > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
    > The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
 
-1. Follow the section on "Running the sample" below.
+1. Open the Visual Studio solution and click start to run the code.
 
 </details>
+
+Follow the steps below to manually walk through the steps to register and configure the applications in the Azure portal.
 
 > [!NOTE]
 > This sample uses a single Application Registration (i.e. App/Client Id) for both the Web API and the SPA projects.
@@ -157,7 +163,7 @@ There are two projects in this sample. To register these projects, you can:
     it, users will be presented a consent screen enabling them to consent to using the web api.
 1. Select the **Expose an API** section, and:
    - Select **Add a scope**
-   - Change the Application ID URI to the **https** pattern, [check AzureADandPersonalMicrosoftAccount restrictions](https://docs.microsoft.com/en-us/azure/active-directory/develop/supported-accounts-validation), (https://{tenant-domain}/{app-name}) and select **Save and Continue**.
+   - Change the Application ID URI to the **https** pattern, [check AzureADandPersonalMicrosoftAccount restrictions](https://docs.microsoft.com/azure/active-directory/develop/supported-accounts-validation), (https://{tenant-domain}/{app-name}) and select **Save and Continue**.
    - Enter the following parameters
      - for **Scope name** use `access_as_user`
      - Keep **Admins and users** for **Who can consent**

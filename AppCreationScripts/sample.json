@@ -1,6 +1,6 @@
 {
   "Sample": {
-    "Title": "A React & Redux single-page application authorizing an ASP.NET Core Web API to call MS Graph API on its behalf using the MS Graph SDK",
+    "Title": "A React & Redux single-page application authorizing an ASP.NET Core Web API to call MS Graph API on behalf of a signed in user",
     "Level": 200,
     "Client": "React & Redux SPA",
     "Service": "ASP.NET Core Web API",
@@ -10,15 +10,31 @@
   "AADApps": [
     {
       "Id": "service",
-      "Name": "ProfileAPIandSPA",
+      "Name": "ProfileAPI",
       "Kind": "WebApi",
-      "HomePage": "https://localhost:44351/",
       "PasswordCredentials": "Auto",
       "RequiredResourcesAccess": [
         {
           "Resource": "Microsoft Graph",
           "DelegatedPermissions": [ "User.Read", "offline_access" ]
+        }
+      ],
+      "ManualSteps": [
+        {
+          "Comment": "Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'."
         },
+        {
+          "Comment": "Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2."
+        }
+      ]
+    },
+    {
+      "Id": "client",
+      "Name": "ProfileSPAApp",
+      "Kind": "SinglePageApplication",      
+      "HomePage": "https://localhost:44351/",
+      "ReplyUrls": "http://localhost:3000",
+      "RequiredResourcesAccess": [        
         {
 					"Resource": "service",
 					"DelegatedPermissions": [ "access_as_user" ]
@@ -26,16 +42,10 @@
       ],
       "ManualSteps": [
         {
-          "Comment": "Navigate to the Authentication blade, click 'Add a platform', choose 'Web' and register your return uri i.e. http://localhost:3000, then enable 'implicit flow'"
-        },
-        {
-          "Comment": "Navigate to the Expose an API blade and change the Application ID URI to use the https pattern. i.e. https://<tenant_domain>/<app_name>"
-        },
-        {
           "Comment": "Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'."
         },
         {
-          "Comment": "Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2."
+          "Comment": "Navigate to the Expose an API blade and change the Application ID URI to use the https pattern. i.e. https://<tenant_domain>/ProfileAPI"
         }
       ]
     }
@@ -71,12 +81,12 @@
           "value": "service.AppId"
         },
         {
-          "key": "Enter the TodoList Web APIs base address, e.g. 'https://localhost:44351/api/todolist/'",
-          "value": "'https://'+$tenantName+\"/ProfileAPIandSPA/access_as_user\""
+          "key": "Enter the Profile APIs base address, e.g. 'https://contoso.onmicrosoft.com/ProfileAPI'",
+          "value": "'$serviceIdentifierUri'"
         },
         {
-          "key": "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{clientId}/access_as_user'",
-          "value": "service.HomePage+'api/profile/'"
+          "key": "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'https://contoso.onmicrosoft.com/ProfileAPI/access_as_user'",
+          "value": "'$serviceIdentifierUri'+'/access_as_user'"
         }
       ]
     }

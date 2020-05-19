@@ -7,6 +7,8 @@ param(
     [string] $azureEnvironmentName
 )
 
+#Requires -Modules AzureAD
+
 <#
  This script creates the Azure AD applications needed for this sample and updates the configuration files
  for the visual Studio projects from the data in the Azure AD applications.
@@ -257,18 +259,18 @@ Function ConfigureApplications
     $user = Get-AzureADUser -ObjectId $creds.Account.Id
 
    # Create the service AAD application
-   Write-Host "Creating the AAD application (ProfileAPIandSPA)"
+   Write-Host "Creating the AAD application (ProfileAPI)"
    # Get a 2 years application key for the service Application
    $pw = ComputePassword
    $fromDate = [DateTime]::Now;
    $key = CreateAppKey -fromDate $fromDate -durationInYears 2 -pw $pw
    $serviceAppKey = $pw
    # create the application 
-   $serviceAadApplication = New-AzureADApplication -DisplayName "ProfileAPIandSPA" `
-                                                   -HomePage "https://localhost:44351/" `
+   $serviceAadApplication = New-AzureADApplication -DisplayName "ProfileAPI" `
                                                    -AvailableToOtherTenants $True `
                                                    -PasswordCredentials $key `
                                                    -PublicClient $False
+
    $serviceIdentifierUri = 'api://'+$serviceAadApplication.AppId
    Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -IdentifierUris $serviceIdentifierUri
 
@@ -302,9 +304,9 @@ Function ConfigureApplications
         {
             # Add scope
             $scope = CreateScope -value "access_as_user"  `
-                -userConsentDisplayName "Access ProfileAPIandSPA"  `
-                -userConsentDescription "Allow the application to access ProfileAPIandSPA on your behalf."  `
-                -adminConsentDisplayName "Access ProfileAPIandSPA"  `
+                -userConsentDisplayName "Access ProfileAPI"  `
+                -userConsentDescription "Allow the application to access ProfileAPI on your behalf."  `
+                -adminConsentDisplayName "Access ProfileAPI"  `
                 -adminConsentDescription "Allows the app to have the same access to information in the directory on behalf of the signed-in user."
             
             $scopes.Add($scope)
@@ -314,12 +316,12 @@ Function ConfigureApplications
     # add/update scopes
     Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -OAuth2Permission $scopes
 
-   Write-Host "Done creating the service application (ProfileAPIandSPA)"
+   Write-Host "Done creating the service application (ProfileAPI)"
 
    # URL of the AAD application in the Azure portal
    # Future? $servicePortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$serviceAadApplication.AppId+"/objectId/"+$serviceAadApplication.ObjectId+"/isMSAApp/"
    $servicePortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$serviceAadApplication.AppId+"/objectId/"+$serviceAadApplication.ObjectId+"/isMSAApp/"
-   Add-Content -Value "<tr><td>service</td><td>$currentAppId</td><td><a href='$servicePortalUrl'>ProfileAPIandSPA</a></td></tr>" -Path createdApps.html
+   Add-Content -Value "<tr><td>service</td><td>$currentAppId</td><td><a href='$servicePortalUrl'>ProfileAPI</a></td></tr>" -Path createdApps.html
 
    $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.RequiredResourceAccess]
 
@@ -330,21 +332,58 @@ Function ConfigureApplications
 
    $requiredResourcesAccess.Add($requiredPermissions)
 
-   # Add Required Resources Access (from 'service' to 'service')
-   Write-Host "Getting access from 'service' to 'service'"
-   $requiredPermissions = GetRequiredPermissions -applicationDisplayName "ProfileAPIandSPA" `
+
+   Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -RequiredResourceAccess $requiredResourcesAccess
+   Write-Host "Granted permissions."
+
+   # Create the client AAD application
+   Write-Host "Creating the AAD application (ProfileSPAApp)"
+   # create the application 
+   $clientAadApplication = New-AzureADApplication -DisplayName "ProfileSPAApp" `
+                                                  -HomePage "https://localhost:44351/" `
+                                                  -ReplyUrls "http://localhost:3000" `
+                                                  -IdentifierUris "https://$tenantName/ProfileSPAApp" `
+                                                  -AvailableToOtherTenants $True `
+                                                  -Oauth2AllowImplicitFlow $true `
+                                                  -PublicClient $False
+
+   # create the service principal of the newly created application 
+   $currentAppId = $clientAadApplication.AppId
+   $clientServicePrincipal = New-AzureADServicePrincipal -AppId $currentAppId -Tags {WindowsAzureActiveDirectoryIntegratedApp}
+
+   # add the user running the script as an app owner if needed
+   $owner = Get-AzureADApplicationOwner -ObjectId $clientAadApplication.ObjectId
+   if ($owner -eq $null)
+   { 
+        Add-AzureADApplicationOwner -ObjectId $clientAadApplication.ObjectId -RefObjectId $user.ObjectId
+        Write-Host "'$($user.UserPrincipalName)' added as an application owner to app '$($clientServicePrincipal.DisplayName)'"
+   }
+
+
+   Write-Host "Done creating the client application (ProfileSPAApp)"
+
+   # URL of the AAD application in the Azure portal
+   # Future? $clientPortalUrl = "https://portal.azure.com/#@"+$tenantName+"/blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.ObjectId+"/isMSAApp/"
+   $clientPortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.ObjectId+"/isMSAApp/"
+   Add-Content -Value "<tr><td>client</td><td>$currentAppId</td><td><a href='$clientPortalUrl'>ProfileSPAApp</a></td></tr>" -Path createdApps.html
+
+   $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.RequiredResourceAccess]
+
+   # Add Required Resources Access (from 'client' to 'service')
+   Write-Host "Getting access from 'client' to 'service'"
+   $requiredPermissions = GetRequiredPermissions -applicationDisplayName "ProfileAPI" `
                                                 -requiredDelegatedPermissions "access_as_user" `
 
    $requiredResourcesAccess.Add($requiredPermissions)
 
 
-   Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -RequiredResourceAccess $requiredResourcesAccess
+   Set-AzureADApplication -ObjectId $clientAadApplication.ObjectId -RequiredResourceAccess $requiredResourcesAccess
    Write-Host "Granted permissions."
 
    # Configure known client applications for service 
    Write-Host "Configure known client applications for the 'service'"
    $knowApplications = New-Object System.Collections.Generic.List[System.String]
-    $knowApplications.Add($serviceAadApplication.AppId)
+    $knowApplications.Add($clientAadApplication.AppId)
    Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -KnownClientApplications $knowApplications
    Write-Host "Configured."
 
@@ -358,17 +397,19 @@ Function ConfigureApplications
    # Update config file for 'client'
    $configFile = $pwd.Path + "\..\ProfileSPA\src\utils\authConfig.js"
    Write-Host "Updating the sample code ($configFile)"
-   $dictionary = @{ "Enter the Client Id (aka 'Application ID')" = $serviceAadApplication.AppId;"Enter the TodoList Web APIs base address, e.g. 'https://localhost:44351/api/todolist/'" = 'https://'+$tenantName+"/ProfileAPIandSPA/access_as_user";"Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{clientId}/access_as_user'" = $serviceAadApplication.HomePage+'api/profile/' };
+   $dictionary = @{ "Enter the Client Id (aka 'Application ID')" = $serviceAadApplication.AppId;"Enter the Profile APIs base address, e.g. 'https://contoso.onmicrosoft.com/ProfileAPI'" = '$serviceIdentifierUri';"Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'https://contoso.onmicrosoft.com/ProfileAPI/access_as_user'" = '$serviceIdentifierUri'+'/access_as_user' };
    ReplaceInTextFile -configFilePath $configFile -dictionary $dictionary
    Write-Host ""
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
    Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
    Write-Host "- For 'service'"
    Write-Host "  - Navigate to '$servicePortalUrl'"
-   Write-Host "  - Navigate to the Authentication blade, click 'Add a platform', choose 'Web' and register your return uri i.e. http://localhost:3000, then enable 'implicit flow'" -ForegroundColor Red 
-   Write-Host "  - Navigate to the Expose an API blade and change the Application ID URI to use the https pattern. i.e. https://<tenant_domain>/<app_name>" -ForegroundColor Red 
    Write-Host "  - Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'." -ForegroundColor Red 
    Write-Host "  - Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2." -ForegroundColor Red 
+   Write-Host "- For 'client'"
+   Write-Host "  - Navigate to '$clientPortalUrl'"
+   Write-Host "  - Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'." -ForegroundColor Red 
+   Write-Host "  - Navigate to the Expose an API blade and change the Application ID URI to use the https pattern. i.e. https://<tenant_domain>/ProfileAPI" -ForegroundColor Red 
 
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
      
