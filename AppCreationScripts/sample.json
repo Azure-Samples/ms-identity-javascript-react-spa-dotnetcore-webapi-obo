@@ -99,7 +99,7 @@
           "value": "service.Scope"
         },
         {
-          "key": "Enter the Web APIs base address, e.g. 'https://localhost:44351/api/profile/'",
+          "key": "Enter the Web APIs base address, e.g. 'https://localhost:44351/api/profile'",
           "value": "service.HomePage"
         }
       ]
