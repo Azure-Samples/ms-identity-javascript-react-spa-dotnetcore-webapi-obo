@@ -8,11 +8,12 @@ products:
 - react
 - redux
 - dotnet
-description: "This sample demonstrates a React & Redux SPA application calling a ASP.NET Core Web API that is secured using Azure Active Directory"
+- azure-active-directory
+description: "This sample demonstrates a React & Redux single-page application authorizing an ASP.NET Core Web API to call MS Graph API on its behalf using the MS Graph SDK"
 urlFragment: "ms-identity-javascript-react-spa-dotnetcore-webapi-obo"
 ---
 
-# A React & Redux single-page application authorizing an ASP.NET Core Web API to call MS Graph API on behalf of a signed in user
+# A React & Redux single-page application authorizing an ASP.NET Core Web API to call MS Graph API on behalf of a signed-in user
 
 ## About this sample
 
@@ -20,19 +21,21 @@ urlFragment: "ms-identity-javascript-react-spa-dotnetcore-webapi-obo"
 
 This sample demonstrates a React & Redux single-page application which lets a user authenticate and then obtain an access token to call an ASP.NET Core Web API, protected by [Azure AD](https://azure.microsoft.com/services/active-directory/). The Web API then calls the [MS Graph API](https://developer.microsoft.com/graph) on the user's behalf using the [on-behalf-of flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow).
 
-
 The Web APIs call to MS Graph API is made using the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
 
 > Looking for previous versions of this code sample? Check out the tags on the [releases](../../releases) GitHub page.
 
 ### Scenario
 
-
-- To protect its endpoint and accept only the authorized calls, the `ProfileAPI` uses the [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) library.
+- The sample implements an **onboarding** scenario where a profile is created for a new user whose fields are pre-populated by the available information about the user on MS Graph API.
+- ProfileSPA uses [MSAL.js](https://github.com/AzureAD/microsoft-authentication-library-for-js) to authenticate a user and [React-Redux](https://react-redux.js.org/) to store id and access tokens.
+- Once the user authenticates, ProfileSPA obtains an [access token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from Azure Active Directory (Azure AD).
+- The access token is then used to authorize the ProfileAPI to call MS Graph API **on user's behalf**. In order to call MS Graph API, ProfileAPI uses the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
+- To protect its endpoint and accept only the authorized calls, the ProfileAPI uses [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) and [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web).
 
 ![Topology](./ReadmeFiles/topology.png)
 
-> [!NOTE]
+> [!NOTE] This sample is configured to allow sign-ins with *personal Microsoft accounts* **ONLY** using the `/consumers` endpoint. Learn more about [supported account](https://docs.microsoft.com/azure/active-directory/develop/v2-supported-account-types) types and [validation differences between them](https://docs.microsoft.com/azure/active-directory/develop/supported-accounts-validation).
 
 ### Contents
 
@@ -72,7 +75,7 @@ git clone https://github.com/Azure-Samples/ms-identity-javascript-react-spa-dotn
 
 or download and extract the repository .zip file.
 
-> Given that the name of the sample is quiet long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid the 256 character path length limitation on Windows.
+> [!NOTE] Given that the name of the sample is quiet long, and so are the names of the referenced NuGet packages, you might want to clone it in a folder close to the root of your hard drive, to avoid the 256 character path length limitation on Windows.
 
 #### Step 2. Install .NET Core API dependencies
 
@@ -103,8 +106,8 @@ There are two projects in this sample. Each needs to be separately registered in
 
 - either follow the steps [Step 2: Register the sample with your Azure Active Directory tenant](#step-2-register-the-sample-with-your-azure-active-directory-tenant) and [Step 3:  Configure the sample to use your Azure AD tenant](#choose-the-azure-ad-tenant-where-you-want-to-create-your-applications)
 - or use PowerShell scripts that:
-  - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you. Note that this works for Visual Studio only.
-  - modify the Visual Studio projects' configuration files.
+  - **automatically** creates the Azure AD applications and related objects (passwords, permissions, dependencies) for you.
+  - modify the projects' configuration files.
 
 <details>
   <summary>Expand this section if you want to use this automation:</summary>
@@ -127,8 +130,6 @@ There are two projects in this sample. Each needs to be separately registered in
    > Other ways of running the scripts are described in [App Creation Scripts](./AppCreationScripts/AppCreationScripts.md)
    > The scripts also provide a guide to automated application registration, configuration and removal which can help in your CI/CD scenarios.
 
-
-
 </details>
 
 #### Register the service: ProfileAPI
@@ -150,6 +151,7 @@ There are two projects in this sample. Each needs to be separately registered in
    - Click the **Add a permission** button and then,
    - Ensure that the **Microsoft APIs** tab is selected
    - In the *Commonly used Microsoft APIs* section, click on **Microsoft Graph**
+   - In the **Delegated permissions** section, ensure that the right permissions are checked: **User.Read** and **offline_access**. Use the search box if necessary.
    - Select the **Add permissions** button.
 1. Select the **Expose an API** section, and:
    - Click **Set** next to the Application ID URI to generate a URI that is unique for this app (in the form of `api://{clientId}`).
@@ -177,7 +179,7 @@ There are two projects in this sample. Each needs to be separately registered in
    - Click **Add a platform** button.
    - Select **Single-page Applications** on the right blade.
    - Add a **Redirect URIs**, for instance **http://localhost:3000**.
-   - Enable **Implicit Flow** by checking the boxes for **Access Tokens** and **Id Tokens**I
+   - Enable **Implicit Flow** by checking the boxes for **Access Tokens** and **Id Tokens**.
    - Click **Configure**.
 1. Select the **API permissions** section
    - Click the **Add a permission** button and then,
@@ -206,7 +208,7 @@ There are two projects in this sample. Each needs to be separately registered in
 1. Open the `ProfileSPA\src\utils\authConfig.js` file
 1. Find the app key `clientId` and replace the existing value with the application ID (clientId) of the `ProfileSPA` application copied from the Azure portal.
 1. Find the app key `redirectUri` and replace the existing value with the base address of the ProfileSPA project (by default `http://localhost:3000/`).
-1. Find the app key `resourceUri` and replace the existing value with the base address of the ProfileAPI project (by default `https://localhost:44351/api/profile/`).
+1. Find the app key `resourceUri` and replace the existing value with the base address of the ProfileAPI project (by default `https://localhost:44351/api/profile`).
 1. Find the app key `resourceScope` and replace the existing value with *Scope* you created earlier `api://{client_id}/.default`.
 
 ### Run the sample
@@ -228,14 +230,13 @@ npm start
 
 ### Explore the sample
 
-1. Open your browser and navigate to http://localhost:3000.
+1. Open your browser and navigate to `http://localhost:3000`.
 2. Sign-in using the button on top-right corner.
 3. If this is your first time sign-in, you will be redirected to the onboarding page (the app will try to make a GET request: if this is the first time, it will fail -you can ignore this).
 4. Hit "Accept" and a new account will be created for you in the database, pre-populated by the available information on MS Graph API.
 5. Submit your changes. When you sign-in next time, the application will recognize you and show you the profile associated with your Id in the database.
 
-> [!NOTE]
-> Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../issues) page.
+> [!NOTE] Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../issues) page.
 
 ## Debugging the sample
 

@@ -4,7 +4,7 @@ import { UserAgentApplication } from "msal";
 // visit https://azuread.github.io/microsoft-authentication-library-for-js/docs/msal/modules/_authenticationparameters_.html
 export const msalApp = new UserAgentApplication({
     auth: {
-        clientId: "Enter the Client Id (aka 'Application ID')",
+        clientId: "8d3c81bf-3fcd-432d-b7f1-c3ac769b6d3e",
         authority: "https://login.microsoftonline.com/consumers",
         validateAuthority: true,
         redirectUri: "http://localhost:3000",
@@ -18,8 +18,8 @@ export const msalApp = new UserAgentApplication({
 
 // Coordinates and required scopes for your web api
 export const apiConfig = {
-    resourceUri: "Enter the Profile APIs base address, e.g. 'https://contoso.onmicrosoft.com/ProfileAPI'",
-    resourceScope: "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'https://contoso.onmicrosoft.com/ProfileAPI/access_as_user'"
+    resourceUri: "https://localhost:44351/api/profile",
+    resourceScope: "api://fdea4330-5197-4aab-8346-a3a8a0b1599e/.default"
 }
 
 /** 
@@ -27,7 +27,7 @@ export const apiConfig = {
  * visit https://azuread.github.io/microsoft-authentication-library-for-js/docs/msal/modules/_authenticationparameters_.html
  */
 export const loginRequest = {
-    scopes: ["openid", "profile", "User.Read"]
+    scopes: ["openid", "profile"]
 }
 
 // Add here scopes for access token to be used at the API endpoints.

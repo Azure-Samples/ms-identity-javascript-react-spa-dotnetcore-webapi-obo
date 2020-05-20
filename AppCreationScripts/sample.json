@@ -1,6 +1,6 @@
 {
   "Sample": {
-    "Title": "A React & Redux single-page application authorizing an ASP.NET Core Web API to call MS Graph API on behalf of a signed in user",
+    "Title": "A React & Redux single-page application authorizing an ASP.NET Core Web API to call MS Graph API on its behalf using the MS Graph SDK",
     "Level": 200,
     "Client": "React & Redux SPA",
     "Service": "ASP.NET Core Web API",
@@ -27,16 +27,25 @@
         },
         {
           "Comment": "Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2."
+        },
+        {
+          "Comment": "Navigate to the Manifest page, find the entry for 'KnownClientApplications' and add the clientId of ProfileSPA."
         }
       ]
     },
     {
       "Id": "client",
-      "Name": "ProfileSPAApp",
-      "Kind": "SinglePageApplication",      
-      "HomePage": "https://localhost:44351/",
+      "Name": "ProfileSPA",
+      "Kind": "SinglePageApplication",
+      "Audience": "AzureADMultipleOrgs",
+      "Oauth2AllowImplicitFlow": true,
+      "HomePage": "http://localhost:3000",
       "ReplyUrls": "http://localhost:3000",
-      "RequiredResourcesAccess": [        
+      "RequiredResourcesAccess": [
+        {
+          "Resource": "Microsoft Graph",
+          "DelegatedPermissions": [ "User.Read" ]
+        },
         {
 					"Resource": "service",
 					"DelegatedPermissions": [ "access_as_user" ]
@@ -47,7 +56,10 @@
           "Comment": "Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'."
         },
         {
-          "Comment": "Navigate to the Expose an API blade and change the Application ID URI to use the https pattern. i.e. https://<tenant_domain>/ProfileAPI"
+          "Comment": "Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2."
+        },
+        {
+          "Comment": "Navigate 'ProfileSPA/src/utils/authConfig.js' and convert the 'resourceScope' value into the form 'api://{client_id}/.default'"
         }
       ]
     }
@@ -83,12 +95,12 @@
           "value": "client.AppId"
         },
         {
-          "key": "Enter the Profile APIs base address, e.g. 'https://contoso.onmicrosoft.com/ProfileAPI'",
-          "value": "'$serviceIdentifierUri'"
+          "key": "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'",
+          "value": "service.Scope"
         },
         {
-          "key": "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'https://contoso.onmicrosoft.com/ProfileAPI/access_as_user'",
-          "value": "'$serviceIdentifierUri'+'/access_as_user'"
+          "key": "Enter the Web APIs base address, e.g. 'https://localhost:44351/api/profile/'",
+          "value": "service.HomePage"
         }
       ]
     }

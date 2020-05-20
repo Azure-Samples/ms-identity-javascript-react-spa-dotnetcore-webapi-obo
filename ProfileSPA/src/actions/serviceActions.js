@@ -6,7 +6,7 @@ import {
 import { apiConfig } from '../utils/authConfig';
 
 export const getProfile = (id) => (dispatch, getState) => {
-    return fetch(apiConfig.resourceUri + id, {
+    return fetch(apiConfig.resourceUri + '/' + id, {
         method: 'GET',
         headers: {
             "Authorization": `Bearer ${getState().auth.accessToken}`,
@@ -52,7 +52,7 @@ export const postProfile = (profile) => (dispatch, getState) => {
 };
 
 export const putProfile = (profile) => (dispatch, getState) => {
-    return fetch(apiConfig.resourceUri + profile.id, {
+    return fetch(apiConfig.resourceUri + '/' + profile.id, {
         method: 'PUT',
         headers: {
             "Authorization": `Bearer ${getState().auth.accessToken}`,
