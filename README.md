@@ -28,9 +28,9 @@ The Web APIs call to MS Graph API is made using the [MS Graph SDK](https://docs.
 ### Scenario
 
 - The sample implements an **onboarding** scenario where a profile is created for a new user whose fields are pre-populated by the available information about the user on MS Graph API.
-- ProfileSPA uses [MSAL.js](https://github.com/AzureAD/microsoft-authentication-library-for-js) to authenticate a user and [React-Redux](https://react-redux.js.org/) to store id and access tokens.
-- Once the user authenticates, ProfileSPA obtains an [access token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from Azure Active Directory (Azure AD).
-- The access token is then used to authorize the ProfileAPI to call MS Graph API **on user's behalf**. In order to call MS Graph API, ProfileAPI uses the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
+- The **ProfileSPA** uses [MSAL.js](https://github.com/AzureAD/microsoft-authentication-library-for-js) to authenticate a user and [React-Redux](https://react-redux.js.org/) to store id and access tokens.
+- Once the user authenticates, **ProfileSPA** obtains an [access token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from Azure Active Directory (Azure AD).
+- The access token is then used to authorize the **ProfileAPI** to call MS Graph API **on user's behalf**. In order to call MS Graph API, **ProfileAPI** uses the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
 - To protect its endpoint and accept only the authorized calls, the ProfileAPI uses [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) and [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web).
 
 ![Topology](./ReadmeFiles/topology.png)
@@ -93,7 +93,7 @@ dotnet dev-certs https --trust
 
 Learn more about [HTTPS in .NET Core](https://docs.microsoft.com/aspnet/core/security/enforcing-ssl).
 
-#### Step 4. Install Angular SPA dependencies
+#### Step 4. Install Angular SPA dependencies 
 
 ```console
 cd ProfileSPA
@@ -233,7 +233,7 @@ npm start
 1. Open your browser and navigate to `http://localhost:3000`.
 2. Sign-in using the button on top-right corner.
 3. If this is your first time sign-in, you will be redirected to the onboarding page (the app will try to make a GET request: if this is the first time, it will fail -you can ignore this).
-4. Hit "Accept" and a new account will be created for you in the database, pre-populated by the available information on MS Graph API.
+4. Hit "Accept" and a new account will be created for you in the database, pre-populated by the information about you fetched from the MS Graph API.
 5. Submit your changes. When you sign-in next time, the application will recognize you and show you the profile associated with your Id in the database.
 
 > [!NOTE] Did the sample not work for you as expected? Did you encounter issues trying this sample? Then please reach out to us using the [GitHub Issues](../issues) page.

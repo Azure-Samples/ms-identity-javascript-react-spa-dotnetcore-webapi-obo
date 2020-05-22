@@ -59,7 +59,7 @@
           "Comment": "Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2."
         },
         {
-          "Comment": "Navigate 'ProfileSPA/src/utils/authConfig.js' and convert the 'resourceScope' value into the form 'api://{client_id}/.default'"
+          "Comment": "Navigate 'ProfileSPA/src/utils/authConfig.js' and convert the 'resourceScope' value into 'api://{client_id}/.default' from 'api://{client_id}/access_as_user'"
         }
       ]
     }

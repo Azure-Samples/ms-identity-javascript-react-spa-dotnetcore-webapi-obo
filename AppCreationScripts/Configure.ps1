@@ -7,6 +7,7 @@ param(
     [string] $azureEnvironmentName
 )
 
+
 <#
  This script creates the Azure AD applications needed for this sample and updates the configuration files
  for the visual Studio projects from the data in the Azure AD applications.
@@ -269,6 +270,7 @@ Function ConfigureApplications
                                                    -AvailableToOtherTenants $True `
                                                    -PasswordCredentials $key `
                                                    -PublicClient $False
+
    $serviceIdentifierUri = 'api://'+$serviceAadApplication.AppId
    Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -IdentifierUris $serviceIdentifierUri
 
@@ -416,7 +418,7 @@ Function ConfigureApplications
    Write-Host "  - Navigate to '$clientPortalUrl'"
    Write-Host "  - Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'." -ForegroundColor Red 
    Write-Host "  - Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2." -ForegroundColor Red 
-   Write-Host "  - Navigate 'ProfileSPA/src/utils/authConfig.js' and convert the 'resourceScope' value into the form 'api://{client_id}/.default'" -ForegroundColor Red 
+   Write-Host "  - Navigate 'ProfileSPA/src/utils/authConfig.js' and convert the 'resourceScope' value into 'api://{client_id}/.default' from 'api://{client_id}/access_as_user'" -ForegroundColor Red 
 
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
      
