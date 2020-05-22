@@ -1,0 +1,108 @@
+{
+  "Sample": {
+    "Title": "A React & Redux single-page application authorizing an ASP.NET Core Web API to call MS Graph API on its behalf using the MS Graph SDK",
+    "Level": 200,
+    "Client": "React & Redux SPA",
+    "Service": "ASP.NET Core Web API",
+    "RepositoryUrl": "ms-identity-javascript-react-spa-dotnetcore-webapi-obo",
+    "Endpoint": "AAD v2.0"
+  },
+  "AADApps": [
+    {
+      "Id": "service",
+      "Name": "ProfileAPI",
+      "Kind": "WebApi",
+      "PasswordCredentials": "Auto",
+      "Audience": "AzureADMultipleOrgs",
+      "HomePage": "https://localhost:44351/api/profile/",
+      "RequiredResourcesAccess": [
+        {
+          "Resource": "Microsoft Graph",
+          "DelegatedPermissions": [ "User.Read", "offline_access" ]
+        }
+      ],
+      "ManualSteps": [
+        {
+          "Comment": "Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'."
+        },
+        {
+          "Comment": "Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2."
+        },
+        {
+          "Comment": "Navigate to the Manifest page, find the entry for 'KnownClientApplications' and add the clientId of ProfileSPA."
+        }
+      ]
+    },
+    {
+      "Id": "client",
+      "Name": "ProfileSPA",
+      "Kind": "SinglePageApplication",
+      "Audience": "AzureADMultipleOrgs",
+      "Oauth2AllowImplicitFlow": true,
+      "HomePage": "http://localhost:3000",
+      "ReplyUrls": "http://localhost:3000",
+      "RequiredResourcesAccess": [
+        {
+          "Resource": "Microsoft Graph",
+          "DelegatedPermissions": [ "User.Read" ]
+        },
+        {
+					"Resource": "service",
+					"DelegatedPermissions": [ "access_as_user" ]
+				}
+      ],
+      "ManualSteps": [
+        {
+          "Comment": "Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'."
+        },
+        {
+          "Comment": "Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2."
+        },
+        {
+          "Comment": "Navigate 'ProfileSPA/src/utils/authConfig.js' and convert the 'resourceScope' value into 'api://{client_id}/.default' from 'api://{client_id}/access_as_user'"
+        }
+      ]
+    }
+  ],
+  "CodeConfiguration": [
+    {
+      "App": "service",
+      "SettingKind": "Text",
+      "SettingFile": "\\..\\ProfileAPI\\appsettings.json",
+      "Mappings": [
+        {
+          "key": "Domain",
+          "value": "$tenantName"
+        },
+        {
+          "key": "ClientId",
+          "value": "service.AppId"
+        },
+        {
+          "key": "ClientSecret",
+          "value": "service.AppKey"
+        }
+      ]
+    },
+
+    {
+      "App": "client",
+      "SettingKind": "Replace",
+      "SettingFile": "\\..\\ProfileSPA\\src\\utils\\authConfig.js",
+      "Mappings": [
+        {
+          "key": "Enter the Client Id (aka 'Application ID')",
+          "value": "client.AppId"
+        },
+        {
+          "key": "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'",
+          "value": "service.Scope"
+        },
+        {
+          "key": "Enter the Web APIs base address, e.g. 'https://localhost:44351/api/profile'",
+          "value": "service.HomePage"
+        }
+      ]
+    }
+  ]
+}
