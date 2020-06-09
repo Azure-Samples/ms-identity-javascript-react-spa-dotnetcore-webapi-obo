@@ -1,10 +1,10 @@
-import { UserAgentApplication } from "msal";
+import { PublicClientApplication } from "@azure/msal-browser";
 
 // For a full list of msal.js configuration parameters, 
 // visit https://azuread.github.io/microsoft-authentication-library-for-js/docs/msal/modules/_authenticationparameters_.html
-export const msalApp = new UserAgentApplication({
+export const msalApp = new PublicClientApplication({
     auth: {
-        clientId: "Enter the Client Id (aka 'Application ID')",
+        clientId: "32ef2eaf-e0f1-4552-86eb-6a69cc934c03",
         authority: "https://login.microsoftonline.com/consumers",
         validateAuthority: true,
         redirectUri: "http://localhost:3000",
@@ -18,8 +18,8 @@ export const msalApp = new UserAgentApplication({
 
 // Coordinates and required scopes for your web api
 export const apiConfig = {
-    resourceUri: "Enter the Web APIs base address, e.g. 'https://localhost:44351/api/profile'",
-    resourceScope: "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'"
+    resourceUri: "https://localhost:44351/api/profile",
+    resourceScope: "api://5ce07ef6-546d-450e-978d-949d85715c97/.default"
 }
 
 /** 
@@ -27,10 +27,10 @@ export const apiConfig = {
  * visit https://azuread.github.io/microsoft-authentication-library-for-js/docs/msal/modules/_authenticationparameters_.html
  */
 export const loginRequest = {
-    scopes: ["openid", "profile"]
+    scopes: ["openid", "profile", "offline_access"]
 }
 
 // Add here scopes for access token to be used at the API endpoints.
 export const tokenRequest = {
-    scopes: [apiConfig.resourceScope, "offline_access"]
+    scopes: [apiConfig.resourceScope]
 }

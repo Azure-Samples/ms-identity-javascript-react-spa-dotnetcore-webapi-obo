@@ -15,9 +15,7 @@ urlFragment: "ms-identity-javascript-react-spa-dotnetcore-webapi-obo"
 
 # A React & Redux single-page application authorizing an ASP.NET Core Web API to call MS Graph API on behalf of a signed-in user
 
-## About this sample
-
-### Overview
+## Overview
 
 This sample demonstrates a React & Redux single-page application which lets a user authenticate and then obtain an access token to call an ASP.NET Core Web API, protected by [Azure AD](https://azure.microsoft.com/services/active-directory/). The Web API then calls the [MS Graph API](https://developer.microsoft.com/graph) on the user's behalf using the [on-behalf-of flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow).
 
@@ -93,7 +91,7 @@ dotnet dev-certs https --trust
 
 Learn more about [HTTPS in .NET Core](https://docs.microsoft.com/aspnet/core/security/enforcing-ssl).
 
-#### Step 4. Install Angular SPA dependencies 
+#### Step 4. Install Angular SPA dependencies
 
 ```console
 cd ProfileSPA
@@ -178,8 +176,7 @@ There are two projects in this sample. Each needs to be separately registered in
 1. From the app's Overview page, select the **Authentication** section.
    - Click **Add a platform** button.
    - Select **Single-page Applications** on the right blade.
-   - Add a **Redirect URIs**, for instance **http://localhost:3000**.
-   - Enable **Implicit Flow** by checking the boxes for **Access Tokens** and **Id Tokens**.
+   - Add a **Redirect URIs**, for instance `http://localhost:3000`.
    - Click **Configure**.
 1. Select the **API permissions** section
    - Click the **Add a permission** button and then,
@@ -189,12 +186,12 @@ There are two projects in this sample. Each needs to be separately registered in
    - Select the **Add permissions** button.
 1. Now you need to leave the registration for `ProfileSPA` and go back to your app registration for `ProfileAPI`.
     - From the app's Overview page, select the **Manifest** section.
-    - Find the entry for `KnownClientApplications`, and add the **Application (client) ID** of the `ProfileSPA` application copied from the Azure portal. 
+    - Find the entry for `KnownClientApplications`, and add the **Application (client) ID** of the `ProfileSPA` application copied from the Azure portal.
     i.e. `KnownClientApplications: [ "your-client-id-for-ProfileSPA" ]`
 
 ##### Configure the service app (ProfileAPI) to use your app registration
 
->In the steps below, "ClientID" is the same as "Application ID" or "AppId".
+> In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
 1. Open the `ProfileAPI\appsettings.json` file
 1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
@@ -232,7 +229,7 @@ npm start
 
 1. Open your browser and navigate to `http://localhost:3000`.
 2. Sign-in using the button on top-right corner.
-3. If this is your first time sign-in, you will be redirected to the onboarding page (the app will try to make a GET request: if this is the first time, it will fail -you can ignore this).
+3. If this is your first time sign-in, you will be redirected to the onboarding page (the app will try to make a GET request: if this is the first time, it will fail -this is expected).
 4. Hit "Accept" and a new account will be created for you in the database, pre-populated by the information about you fetched from the MS Graph API.
 5. Submit your changes. When you sign-in next time, the application will recognize you and show you the profile associated with your Id in the database.
 

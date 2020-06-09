@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@azure/msal-browser": "^2.0.0-beta.2",
     "bootstrap": "^4.4.1",
     "msal": "^1.3.0",
     "react": "^16.13.1",

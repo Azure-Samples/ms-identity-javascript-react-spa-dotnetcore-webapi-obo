@@ -17,6 +17,7 @@ export const requiresInteraction = errorMessage => {
     return (
         errorMessage.indexOf("consent_required") > -1 ||
         errorMessage.indexOf("interaction_required") > -1 ||
-        errorMessage.indexOf("login_required") > -1
+        errorMessage.indexOf("login_required") > -1 ||
+        errorMessage.indexOf("no_tokens_found") > -1
     );
 };
