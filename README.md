@@ -23,7 +23,7 @@ This sample demonstrates a React & Redux single-page application which lets a us
 
 The Web APIs call to MS Graph API is made using the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
 
-> Looking for previous versions of this code sample? Check out the tags on the [releases](../../releases) GitHub page.
+> Would you like to use this sample with **MSAL.js 2.x** featuring **authorization code flow with PKCE**? If so, switch to the [msal-2x](https://github.com/Azure-Samples/ms-identity-javascript-react-spa-dotnetcore-webapi-obo/tree/msal-2x) branch instead.
 
 ### Scenario
 
@@ -35,7 +35,7 @@ The Web APIs call to MS Graph API is made using the [MS Graph SDK](https://docs.
 
 ![Topology](./ReadmeFiles/topology.png)
 
-> [!NOTE] This sample is configured to allow sign-ins with *personal Microsoft accounts* **ONLY** using the `/consumers` endpoint. Learn more about [supported account](https://docs.microsoft.com/azure/active-directory/develop/v2-supported-account-types) types and [validation differences between them](https://docs.microsoft.com/azure/active-directory/develop/supported-accounts-validation).
+> [!NOTE] This sample is configured to allow sign-ins with *personal Microsoft accounts* **ONLY** using the `/consumers` endpoint. If you would like to allow sign-ins with work and school accounts in your tenant, see [this note](./ReadmeFiles/howto-common.md). Learn more about [supported account](https://docs.microsoft.com/azure/active-directory/develop/v2-supported-account-types) types and [validation differences between them](https://docs.microsoft.com/azure/active-directory/develop/supported-accounts-validation).
 
 ### Contents
 
