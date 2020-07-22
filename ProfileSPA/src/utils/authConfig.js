@@ -2,7 +2,7 @@
 // visit https://azuread.github.io/microsoft-authentication-library-for-js/docs/msal/modules/_authenticationparameters_.html
 export const msalConfig = {
     auth: {
-        clientId: "32ef2eaf-e0f1-4552-86eb-6a69cc934c03",
+        clientId: "Enter the Client Id (aka 'Application ID')",
         authority: "https://login.microsoftonline.com/consumers",
         redirectUri: "http://localhost:3000"
     },
@@ -15,7 +15,7 @@ export const msalConfig = {
 // Coordinates and required scopes for your web api
 export const apiConfig = {
     resourceUri: "https://localhost:44351/api/profile",
-    resourceScope: "api://5ce07ef6-546d-450e-978d-949d85715c97/.default"
+    resourceScope: "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'"
 }
 
 /** 
