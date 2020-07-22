@@ -22,8 +22,6 @@ This sample demonstrates a React & Redux single-page application which lets a us
 
 The Web APIs call to MS Graph API is made using the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
 
-> Would you like to use this sample with **MSAL.js 2.x** featuring **authorization code flow with PKCE**? If so, switch to the [msal-2x](https://github.com/Azure-Samples/ms-identity-javascript-react-spa-dotnetcore-webapi-obo/tree/msal-2x) branch instead.
-
 ### Scenario
 
 - The sample implements an **onboarding** scenario where a profile is created for a new user whose fields are pre-populated by the available information about the user on MS Graph API.
