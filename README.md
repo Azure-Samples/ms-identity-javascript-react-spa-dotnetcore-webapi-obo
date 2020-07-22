@@ -9,6 +9,7 @@ products:
 - redux
 - dotnet
 - azure-active-directory
+- msal
 description: "This sample demonstrates a React & Redux single-page application authorizing an ASP.NET Core Web API to call MS Graph API on its behalf using the MS Graph SDK"
 urlFragment: "ms-identity-javascript-react-spa-dotnetcore-webapi-obo"
 ---
