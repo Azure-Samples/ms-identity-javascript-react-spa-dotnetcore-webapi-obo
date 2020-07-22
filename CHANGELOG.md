@@ -2,7 +2,7 @@
 
 ## 7/22/2020
 
-* Updated to MSAL.js 2.0
+* Updated MSAL.js to 2.0 using auth code w/ PKCE.
 
 ## 6/21/2020
 
