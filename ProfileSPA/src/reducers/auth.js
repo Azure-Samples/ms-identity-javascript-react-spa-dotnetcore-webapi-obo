@@ -9,7 +9,11 @@ const initialState = {
 export default (state = initialState, action={}) => {
     switch (action.type) {
         case "UPDATE_ACCOUNT":
-            return Object.assign({}, state, {account: action.payload, idToken: action.payload.idToken, isAuthenticated: true});
+            return Object.assign({}, state, {
+                account: action.payload, 
+                idToken: action.payload.idToken, 
+                accessToken: action.payload.accessToken,
+                isAuthenticated: true});
 
         case "UPDATE_ERROR":
             return Object.assign({}, state, {error: action.payload, isAuthenticated: false});

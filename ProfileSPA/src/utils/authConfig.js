@@ -1,20 +1,16 @@
-import { PublicClientApplication } from "@azure/msal-browser";
-
 // For a full list of msal.js configuration parameters, 
 // visit https://azuread.github.io/microsoft-authentication-library-for-js/docs/msal/modules/_authenticationparameters_.html
-export const msalApp = new PublicClientApplication({
+export const msalConfig = {
     auth: {
         clientId: "32ef2eaf-e0f1-4552-86eb-6a69cc934c03",
         authority: "https://login.microsoftonline.com/consumers",
-        validateAuthority: true,
-        redirectUri: "http://localhost:3000",
-        navigateToLoginRequestUrl: false
+        redirectUri: "http://localhost:3000"
     },
     cache: {
         cacheLocation: "localStorage", // This configures where your cache will be stored
         storeAuthStateInCookie: false // Set this to "true" if you are having issues on IE11 or Edge
     },
-});
+}
 
 // Coordinates and required scopes for your web api
 export const apiConfig = {
