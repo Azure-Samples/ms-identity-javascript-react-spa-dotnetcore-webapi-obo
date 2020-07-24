@@ -38,11 +38,14 @@ export const postProfile = (profile) => (dispatch, getState) => {
             "Content-Type": 'application/json'
         },
         body: JSON.stringify(profile)
-    }).then(response => response.json())
+    }).then(response => {
+        if (response && response.status !== 404) {
+            return response.json();
+        }
+    })
     .then((response) => {
         if (response === 'interaction required') {
             // trigger interaction
-
         } else {
             dispatch(updateProfile(response))
             dispatch(updateUI(2))

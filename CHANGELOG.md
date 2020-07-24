@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 7/22/2020
+
+* Updated MSAL.js to 2.0 using auth code w/ PKCE.
+
 ## 6/21/2020
 
 * Updated msal.js to 1.3.2.

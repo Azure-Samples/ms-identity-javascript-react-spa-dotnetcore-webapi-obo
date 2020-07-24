@@ -97,10 +97,6 @@
         {
           "key": "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'",
           "value": "service.Scope"
-        },
-        {
-          "key": "Enter the Web APIs base address, e.g. 'https://localhost:44351/api/profile'",
-          "value": "service.HomePage"
         }
       ]
     }

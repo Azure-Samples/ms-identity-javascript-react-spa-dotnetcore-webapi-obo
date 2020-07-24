@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { compose } from 'redux';
-
-import { msalApp, loginRequest, tokenRequest } from './authConfig';
+import { PublicClientApplication } from "@azure/msal-browser";
+import { msalConfig, loginRequest, tokenRequest } from './authConfig';
 import { isIE, requiresInteraction } from './authHelper';
 
 // If you support IE, our recommendation is that you sign-in using Redirect flow
 const useRedirectFlow = isIE();
+
+const msalApp = new PublicClientApplication(msalConfig);
 
 const AuthHOC = WrappedComponent => class AuthProvider extends Component {
 
@@ -16,56 +18,83 @@ const AuthHOC = WrappedComponent => class AuthProvider extends Component {
         this.state = {
             account: null,
             error: null,
+            username: null,
         };
     }
 
-    componentDidMount() {
-        msalApp.handleRedirectCallback(error => {
-            if (error) {
-                const errorMessage = error.errorMessage ? error.errorMessage : "Unable to acquire access token.";
-                
-                // setState works as long as navigateToLoginRequestUrl: false
-                this.setState({error: errorMessage});
-            }
-        });
-
-        const account = msalApp.getAccount();
-        this.setState({account});
+    componentDidMount = async() => {
+        if (useRedirectFlow) {
+            msalApp.handleRedirectPromise()
+                .then(this.handleResponse)
+                .catch(err => {
+                    this.setState({error: err.errorMessage});
+                    console.error(err);
+                });
+        }
     }
 
-    async acquireToken() {
+    getAccounts = async(response) => {
+        const currentAccounts = msalApp.getAllAccounts();
+        
+        if (currentAccounts === null) {
+            return;
+        } else if (currentAccounts.length > 1) {
+            console.warn("Multiple accounts detected.");
+            // defaults to the first account
+            this.setState({account: response, username: currentAccounts[0].username});
+            // add your own account selection logic here
+        } else if (currentAccounts.length === 1) {
+            this.setState({account: response, username: currentAccounts[0].username});
+        }
+        return response;
+    }
+
+    handleResponse = async(response) => {
+        if (response !== null) {
+            this.setState({
+                account: response,
+                username: response.account.username,
+            });
+        return response;
+        } else {
+            return this.getAccounts(response);
+        }
+    }
+
+    acquireToken = async() => {
+        tokenRequest.account = this.state.account.account;
+
         return msalApp.acquireTokenSilent(tokenRequest)
-            .then((response) => response)
-            .catch(error => {
-                // Call acquireTokenPopup (popup window) in case of acquireTokenSilent failure
-                // due to consent or interaction required ONLY
-                if (requiresInteraction(error.errorCode)) {
+            .then(this.handleResponse)
+            .catch(err => {
+                if (requiresInteraction(err.errorCode)) {
                     return useRedirectFlow
                         ? msalApp.acquireTokenRedirect(tokenRequest)
                         : msalApp.acquireTokenPopup(tokenRequest);
                 } else {
-                    console.error('Non-interactive error:', error.errorCode)
+                    console.error('Non-interactive error:', err.errorCode)
                 }
         });
     }
 
-    async onSignIn(redirect) {
-
+    onSignIn = async(redirect) => {
         if (redirect) {
             return msalApp.loginRedirect(loginRequest);
         }
 
         return msalApp.loginPopup(loginRequest)
-            .then((account) => {
-                this.setState({account});
-            })
-            .catch(error => {
-                this.setState({error: error.errorMessage});
+            .then(this.handleResponse)
+            .catch(err => {
+                this.setState({err: err.errorMessage});
             });
     }
 
-    async onSignOut() {
-        msalApp.logout();
+    onSignOut = async() => {
+        const logoutRequest = {
+            account: msalApp.getAccountByUsername(this.state.username)
+        };
+    
+        return msalApp.logout(logoutRequest);
     }
 
     render() {
@@ -83,6 +112,5 @@ const AuthHOC = WrappedComponent => class AuthProvider extends Component {
 };
 
 const mapStateToProps = (state) => state;
-
     
 export default compose(connect(mapStateToProps), AuthHOC)
