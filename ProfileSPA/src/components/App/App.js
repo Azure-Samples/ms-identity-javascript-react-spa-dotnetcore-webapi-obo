@@ -15,7 +15,7 @@ import './App.css';
 class App extends React.Component {
 
     handleSignIn = () => {
-        this.props.onSignIn().then(() => {
+        this.props.signIn().then(() => {
             if (this.props.account) {
                 this.props.updateAccount(this.props.account);
             } else {
@@ -29,7 +29,7 @@ class App extends React.Component {
     };
 
     handleSignOut = () => {
-        this.props.onSignOut().then(() => {
+        this.props.signOut().then(() => {
             if (!this.props.account) {
                 this.props.updateAccount(null);
             } else {
@@ -83,8 +83,9 @@ class App extends React.Component {
 App.propTypes = {
     account: PropTypes.object,
     error: PropTypes.string,
-    onSignIn: PropTypes.func.isRequired,
-    onSignOut: PropTypes.func.isRequired,
+    signIn: PropTypes.func.isRequired,
+    signOut: PropTypes.func.isRequired,
+    acquireToken: PropTypes.func.isRequired,
 }
 
 export default App;

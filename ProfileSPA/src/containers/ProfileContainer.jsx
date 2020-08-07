@@ -23,17 +23,20 @@ class ProfileContainer extends Component {
         // acquire the token and update the store
         this.props.acquireToken().then((response) => {
             // set access token
-            this.props.updateToken(response.accessToken);
-            if (this.props.auth.idToken) {
-                // Our mock database assign user Ids based on MS Graph API account id, which corresponds to the "oid" claim in the id_token
-                // visit https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens for more information
-                let tokenOID = this.props.auth.account.idTokenClaims.oid.replace(/-/gi, ''); // removing dashes
-    
-                // check if user already exists
-                try {
-                    this.props.getProfile(tokenOID);
-                } catch (err) {
-                    console.log(err);
+            if (response) {
+                this.props.updateToken(response.accessToken);
+
+                if (this.props.auth.idToken) {
+                    // Our mock database assign user Ids based on MS Graph API account id, which corresponds to the "oid" claim in the id_token
+                    // visit https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens for more information
+                    let tokenOID = this.props.auth.account.idTokenClaims.oid.replace(/-/gi, ''); // removing dashes
+        
+                    // check if user already exists
+                    try {
+                        this.props.getProfile(tokenOID);
+                    } catch (err) {
+                        console.log(err);
+                    }
                 }
             }
         });

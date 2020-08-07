@@ -3,7 +3,7 @@
     "Title": "A React & Redux single-page application authorizing an ASP.NET Core Web API to call MS Graph API on its behalf using the MS Graph SDK",
     "Level": 200,
     "Client": "React & Redux SPA",
-    "Service": "ASP.NET Core Web API",
+    "Service": ".NET Core Web API",
     "RepositoryUrl": "ms-identity-javascript-react-spa-dotnetcore-webapi-obo",
     "Endpoint": "AAD v2.0"
   },

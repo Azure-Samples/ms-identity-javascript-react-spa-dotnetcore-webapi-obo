@@ -1,11 +1,22 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { compose } from 'redux';
-import { PublicClientApplication } from "@azure/msal-browser";
+import { PublicClientApplication, InteractionRequiredAuthError } from "@azure/msal-browser";
 import { msalConfig, loginRequest, tokenRequest } from './authConfig';
-import { isIE, requiresInteraction } from './authHelper';
+
+const isIE = () => {
+    const ua = window.navigator.userAgent;
+    const msie = ua.indexOf("MSIE ") > -1;
+    const msie11 = ua.indexOf("Trident/") > -1;
+
+    // If you as a developer are testing using Edge InPrivate mode, please add "isEdge" to the if check
+    // const isEdge = ua.indexOf("Edge/") > -1;
+
+    return msie || msie11;
+};
 
 // If you support IE, our recommendation is that you sign-in using Redirect flow
+
 const useRedirectFlow = isIE();
 
 const msalApp = new PublicClientApplication(msalConfig);
@@ -22,7 +33,7 @@ const AuthHOC = WrappedComponent => class AuthProvider extends Component {
         };
     }
 
-    componentDidMount = async() => {
+    componentDidMount = () => {
         if (useRedirectFlow) {
             msalApp.handleRedirectPromise()
                 .then(this.handleResponse)
@@ -31,53 +42,70 @@ const AuthHOC = WrappedComponent => class AuthProvider extends Component {
                     console.error(err);
                 });
         }
+
+        this.getAccounts();
     }
 
-    getAccounts = async(response) => {
+    getAccounts = () => {
+        /**
+         * See here for more info on account retrieval: 
+         * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-common/docs/Accounts.md
+         */
         const currentAccounts = msalApp.getAllAccounts();
         
         if (currentAccounts === null) {
             return;
         } else if (currentAccounts.length > 1) {
             console.warn("Multiple accounts detected.");
-            // defaults to the first account
-            this.setState({account: response, username: currentAccounts[0].username});
-            // add your own account selection logic here
+            // Add choose account code here
+            this.setState({
+                username: currentAccounts[0].username,
+                account: msalApp.getAccountByUsername(currentAccounts[0].username),
+            });
         } else if (currentAccounts.length === 1) {
-            this.setState({account: response, username: currentAccounts[0].username});
+            this.setState({
+                username: currentAccounts[0].username,
+                account: msalApp.getAccountByUsername(currentAccounts[0].username),
+            })
         }
-        return response;
     }
 
-    handleResponse = async(response) => {
+    handleResponse = (response) => {
+        console.log(response);
         if (response !== null) {
             this.setState({
-                account: response,
+                account: response.account,
                 username: response.account.username,
             });
-        return response;
         } else {
-            return this.getAccounts(response);
+            this.getAccounts();
         }
     }
 
     acquireToken = async() => {
-        tokenRequest.account = this.state.account.account;
-
-        return msalApp.acquireTokenSilent(tokenRequest)
-            .then(this.handleResponse)
-            .catch(err => {
-                if (requiresInteraction(err.errorCode)) {
-                    return useRedirectFlow
-                        ? msalApp.acquireTokenRedirect(tokenRequest)
-                        : msalApp.acquireTokenPopup(tokenRequest);
+            /**
+             * See here for more info on account retrieval: 
+             * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-common/docs/Accounts.md
+             */
+            console.log(tokenRequest)
+            tokenRequest.account = msalApp.getAccountByUsername(this.state.username);
+            console.log(tokenRequest.account)
+            return msalApp.acquireTokenSilent(tokenRequest).catch(error => {
+                console.warn("silent token acquisition fails. acquiring token using redirect");
+                if (error) {
+                    // fallback to interaction when silent call fails
+                    return msalApp.acquireTokenPopup(tokenRequest)
+                        .then(this.handleResponse)
+                        .catch(error => {
+                            console.error(error);
+                        });
                 } else {
-                    console.error('Non-interactive error:', err.errorCode)
+                    console.warn(error);   
                 }
-        });
+            });
     }
 
-    onSignIn = async(redirect) => {
+    signIn = async(redirect) => {
         if (redirect) {
             return msalApp.loginRedirect(loginRequest);
         }
@@ -89,7 +117,7 @@ const AuthHOC = WrappedComponent => class AuthProvider extends Component {
             });
     }
 
-    onSignOut = async() => {
+    signOut = async() => {
         const logoutRequest = {
             account: msalApp.getAccountByUsername(this.state.username)
         };
@@ -98,14 +126,16 @@ const AuthHOC = WrappedComponent => class AuthProvider extends Component {
     }
 
     render() {
+        console.log(this.state)
         return (
             <WrappedComponent
                 {...this.props}
-                account={this.state.account}
-                error={this.state.error}
-                onSignIn={() => this.onSignIn(useRedirectFlow)}
-                onSignOut={() => this.onSignOut()}
-                acquireToken={() => this.acquireToken()}
+                account = {this.state.account}
+                error = {this.state.error}
+                isAuthenticated = {this.state.isAuthenticated}
+                signIn = {() => this.signIn(useRedirectFlow)}
+                signOut = {() => this.signOut()}
+                acquireToken = {() => this.acquireToken()}
             />
         );
     }

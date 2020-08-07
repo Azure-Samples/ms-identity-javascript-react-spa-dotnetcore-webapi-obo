@@ -2,30 +2,60 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: ''
+labels: bug
 assignees: derisen
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+>> Please follow the issue template below. Failure to do so will result in a delay in answering your question.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+## Library
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+- [ ] `msal@1.x.x` or `@azure/msal@1.x.x`
+- [ ] `@azure/msal-browser@2.x.x`
+- [ ] `@azure/msal-angular@0.x.x`
+- [ ] `@azure/msal-angular@1.x.x`
+- [ ] `@azure/msal-angularjs@1.x.x`
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Important**: Please fill in your exact version number above, e.g. `msal@1.1.3`.
 
-**Platform & Library**
- - Browser [e.g. chrome, safari etc.]
- - MSAL.js  [e.g. 1.x, 2.x etc]
+## Framework
 
-**Additional context**
-Add any other context about the problem here.
+## Description
+
+## Error Message
+
+## Security
+
+- [ ] Is this issue security related?
+
+## Regression
+
+- [ ] Did this behavior work before?
+
+Version:
+
+## MSAL Configuration
+
+```js
+// Provide configuration values here.
+// For Azure B2C issues, please include your policies.
+```
+
+## Reproduction steps
+
+```js
+// Provide relevant code snippets here.
+// For Azure B2C issues, please include your policies.
+```
+
+## Expected behavior
+
+## Browsers/Environment
+
+- [ ] Chrome
+- [ ] Firefox
+- [ ] Edge
+- [ ] Safari
+- [ ] IE
+- [ ] Other (Please add browser name here)
