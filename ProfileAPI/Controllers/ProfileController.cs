@@ -79,11 +79,19 @@ namespace ProfileAPI.Controllers
                     }
                 } else
                 {
-                    // OID is represented in id_token as a 32 digit number, while in MS Graph API, the
-                    // preceeding 0s are omitted. The following operation adds the omitted 0s back.
-                    int x = 32 - profile.Id.Length;
-                    string graphID = new string('0', x) + profile.Id;
 
+                    string graphID;
+
+                    // OID is represented in id_token as a 32 digit number, while in MS Graph API, the
+                    // preceding 0s are sometimes omitted. The following operation adds the omitted 0s back.
+                    
+                    if (profile.Id.Length < 32) {
+                        int x = 32 - profile.Id.Length;
+                        graphID = new string('0', x) + profile.Id;
+                    } else {
+                        graphID = profile.id;
+                    }
+                
                     profileItem.Id = graphID;
                     profileItem.UserPrincipalName = profile.UserPrincipalName;
                     profileItem.GivenName = profile.GivenName;
