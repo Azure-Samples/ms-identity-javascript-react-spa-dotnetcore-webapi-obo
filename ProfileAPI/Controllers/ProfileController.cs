@@ -89,7 +89,7 @@ namespace ProfileAPI.Controllers
                         int x = 32 - profile.Id.Length;
                         graphID = new string('0', x) + profile.Id;
                     } else {
-                        graphID = profile.id;
+                        graphID = profile.Id;
                     }
                 
                     profileItem.Id = graphID;

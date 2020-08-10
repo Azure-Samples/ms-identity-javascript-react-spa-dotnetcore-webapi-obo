@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { compose } from 'redux';
-import { PublicClientApplication, InteractionRequiredAuthError } from "@azure/msal-browser";
+import { PublicClientApplication } from "@azure/msal-browser";
 import { msalConfig, loginRequest, tokenRequest } from './authConfig';
 
 const isIE = () => {
@@ -87,9 +87,8 @@ const AuthHOC = WrappedComponent => class AuthProvider extends Component {
              * See here for more info on account retrieval: 
              * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-common/docs/Accounts.md
              */
-            console.log(tokenRequest)
             tokenRequest.account = msalApp.getAccountByUsername(this.state.username);
-            console.log(tokenRequest.account)
+
             return msalApp.acquireTokenSilent(tokenRequest).catch(error => {
                 console.warn("silent token acquisition fails. acquiring token using redirect");
                 if (error) {
@@ -126,7 +125,6 @@ const AuthHOC = WrappedComponent => class AuthProvider extends Component {
     }
 
     render() {
-        console.log(this.state)
         return (
             <WrappedComponent
                 {...this.props}
