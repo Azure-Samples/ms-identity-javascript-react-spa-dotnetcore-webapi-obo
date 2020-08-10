@@ -11,7 +11,7 @@ export default (state = initialState, action={}) => {
         case "UPDATE_ACCOUNT":
             return Object.assign({}, state, {
                 account: action.payload, 
-                idToken: action.payload.idToken, 
+                idToken: action.payload.idTokenClaims, 
                 accessToken: action.payload.accessToken,
                 isAuthenticated: true});
 
@@ -19,7 +19,11 @@ export default (state = initialState, action={}) => {
             return Object.assign({}, state, {error: action.payload, isAuthenticated: false});
 
         case "UPDATE_TOKEN":
-            return Object.assign({}, state, {accessToken: action.payload});        
+            console.log(action.payload)
+            return Object.assign({}, state, {
+                idToken: action.payload.idTokenClaims,
+                accessToken: action.payload.accessToken
+            });        
 
         default:
             return state

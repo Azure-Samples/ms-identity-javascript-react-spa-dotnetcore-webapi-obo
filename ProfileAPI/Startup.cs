@@ -25,9 +25,9 @@ namespace ProfileAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddProtectedWebApi(Configuration)
-                    .AddProtectedWebApiCallsProtectedWebApi(Configuration)
-                    .AddInMemoryTokenCaches();
+            services.AddMicrosoftWebApiAuthentication(Configuration)
+                .AddMicrosoftWebApiCallsWebApi(Configuration)
+                .AddInMemoryTokenCaches();
 
             services.AddDbContext<ProfileContext>(opt => opt.UseInMemoryDatabase("Profile"));
 
