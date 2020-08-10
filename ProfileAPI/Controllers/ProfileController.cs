@@ -67,7 +67,7 @@ namespace ProfileAPI.Controllers
             // call to the downstream API (Microsoft Graph) has completed.
             try
             {
-                var profile = CallGraphApiOnBehalfOfUser().GetAwaiter().GetResult();
+                var profile = await CallGraphApiOnBehalfOfUser();
 
                 if (profile is string)
                 {
