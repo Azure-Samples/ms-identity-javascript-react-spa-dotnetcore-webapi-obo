@@ -8,8 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using ProfileAPI.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace ProfileAPI
 {
@@ -25,9 +25,11 @@ namespace ProfileAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMicrosoftWebApiAuthentication(Configuration)
-                .AddMicrosoftWebApiCallsWebApi(Configuration)
-                .AddInMemoryTokenCaches();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApi(Configuration)
+                    .EnableTokenAcquisitionToCallDownstreamApi()
+                        .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
+                        .AddInMemoryTokenCaches();
 
             services.AddDbContext<ProfileContext>(opt => opt.UseInMemoryDatabase("Profile"));
 

@@ -14,8 +14,8 @@ using Microsoft.Identity.Web.Resource;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Graph;
 using ProfileAPI.Models;
-using ProfileAPI.Utils;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Options;
 
 namespace ProfileAPI.Controllers
 {
@@ -32,11 +32,15 @@ namespace ProfileAPI.Controllers
 
         private readonly ProfileContext _context;
         private readonly ITokenAcquisition _tokenAcquisition;
+        private readonly GraphServiceClient _graphServiceClient;
+        private readonly IOptions<MicrosoftGraphOptions> _graphOptions;
 
-        public ProfileController(ProfileContext context, ITokenAcquisition tokenAcquisition)
+        public ProfileController(ProfileContext context, ITokenAcquisition tokenAcquisition, GraphServiceClient graphServiceClient, IOptions<MicrosoftGraphOptions> graphOptions)
         {
             _context = context;
             _tokenAcquisition = tokenAcquisition;
+            _graphServiceClient = graphServiceClient;
+            _graphOptions = graphOptions;
         }
 
         // GET: api/ProfileItems/5
@@ -67,39 +71,30 @@ namespace ProfileAPI.Controllers
             // call to the downstream API (Microsoft Graph) has completed.
             try
             {
-                var profile = await CallGraphApiOnBehalfOfUser();
+                User profile = await _graphServiceClient.Me.Request().GetAsync();
 
-                if (profile is string)
+                string graphID;
+
+                // OID is represented in id_token as a 32 digit number, while in MS Graph API, the
+                // preceding 0s are sometimes omitted. The following operation adds the omitted 0s back.
+
+                if (profile.Id.Length < 32)
                 {
-                    if (profile == "interaction required")
-                    {
-                        HttpContext.Response.ContentType = "application/json";
-                        HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        await HttpContext.Response.WriteAsync(JsonConvert.SerializeObject("interaction required"));
-                    }
-                } else
-                {
-
-                    string graphID;
-
-                    // OID is represented in id_token as a 32 digit number, while in MS Graph API, the
-                    // preceding 0s are sometimes omitted. The following operation adds the omitted 0s back.
-                    
-                    if (profile.Id.Length < 32) {
-                        int x = 32 - profile.Id.Length;
-                        graphID = new string('0', x) + profile.Id;
-                    } else {
-                        graphID = profile.Id;
-                    }
-                
-                    profileItem.Id = graphID;
-                    profileItem.UserPrincipalName = profile.UserPrincipalName;
-                    profileItem.GivenName = profile.GivenName;
-                    profileItem.Surname = profile.Surname;
-                    profileItem.JobTitle = profile.JobTitle;
-                    profileItem.MobilePhone = profile.MobilePhone;
-                    profileItem.PreferredLanguage = profile.PreferredLanguage;
+                    int x = 32 - profile.Id.Length;
+                    graphID = new string('0', x) + profile.Id;
                 }
+                else
+                {
+                    graphID = profile.Id;
+                }
+
+                profileItem.Id = graphID;
+                profileItem.UserPrincipalName = profile.UserPrincipalName;
+                profileItem.GivenName = profile.GivenName;
+                profileItem.Surname = profile.Surname;
+                profileItem.JobTitle = profile.JobTitle;
+                profileItem.MobilePhone = profile.MobilePhone;
+                profileItem.PreferredLanguage = profile.PreferredLanguage;
             }
             catch (MsalException ex)
             {
@@ -109,9 +104,20 @@ namespace ProfileAPI.Controllers
             }
             catch (Exception ex)
             {
-                HttpContext.Response.ContentType = "application/json";
-                HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                await HttpContext.Response.WriteAsync(JsonConvert.SerializeObject("An error occurred while calling the downstream API\n" + ex.Message));
+                if (ex.InnerException is MicrosoftIdentityWebChallengeUserException challengeException)
+                {
+                    await _tokenAcquisition.ReplyForbiddenWithWwwAuthenticateHeaderAsync(_graphOptions.Value.Scopes.Split(' '),
+                        challengeException.MsalUiRequiredException);
+                    HttpContext.Response.ContentType = "application/json";
+                    HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    await HttpContext.Response.WriteAsync(JsonConvert.SerializeObject("interaction required"));
+                }
+                else
+                {
+                    HttpContext.Response.ContentType = "application/json";
+                    HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    await HttpContext.Response.WriteAsync(JsonConvert.SerializeObject("An error occurred while calling the downstream API\n" + ex.Message));
+                }
             }
 
             _context.ProfileItems.Add(profileItem);
@@ -159,28 +165,6 @@ namespace ProfileAPI.Controllers
         private bool ProfileItemExists(string id)
         {
             return _context.ProfileItems.Any(e => e.Id == id);
-        }
-
-        public async Task<dynamic> CallGraphApiOnBehalfOfUser()
-        {
-            string[] scopes = { "User.Read" };
-            dynamic response;
-
-            // we use MSAL.NET to get a token to call the API On Behalf Of the current user
-            try
-            {
-                string accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
-                GraphHelper.Initialize(accessToken);
-                User me = await GraphHelper.GetMeAsync();
-                response = me;
-            }
-            catch (MsalUiRequiredException ex)
-            {
-                await _tokenAcquisition.ReplyForbiddenWithWwwAuthenticateHeaderAsync(scopes, ex);
-                return "interaction required";
-            }
-
-            return response;
         }
     }
 }
