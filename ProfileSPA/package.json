@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@azure/msal-browser": "^2.0.1",
+    "@azure/msal-browser": "^2.1.0",
     "bootstrap": "^4.5.0",
     "react": "^16.13.1",
     "react-bootstrap": "^1.2.2",
     "react-dom": "^16.13.1",
     "react-proptypes": "^1.0.0",
     "react-redux": "^7.2.0",
-    "react-scripts": "3.4.1",
+    "react-scripts": "^3.4.3",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0"
   },

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { compose } from 'redux';
 import { PublicClientApplication } from "@azure/msal-browser";
-import { msalConfig, loginRequest, tokenRequest } from './authConfig';
+import { msalConfig, loginRequest, tokenRequest, silentRequest } from './authConfig';
 
 const isIE = () => {
     const ua = window.navigator.userAgent;
@@ -52,9 +52,9 @@ const AuthHOC = WrappedComponent => class AuthProvider extends Component {
          * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-common/docs/Accounts.md
          */
         const currentAccounts = msalApp.getAllAccounts();
-        
+
         if (currentAccounts === null) {
-            return;
+            console.error("No accounts detected!");
         } else if (currentAccounts.length > 1) {
             console.warn("Multiple accounts detected.");
             // Add choose account code here
@@ -71,7 +71,6 @@ const AuthHOC = WrappedComponent => class AuthProvider extends Component {
     }
 
     handleResponse = (response) => {
-        console.log(response);
         if (response !== null) {
             this.setState({
                 account: response.account,
@@ -87,12 +86,14 @@ const AuthHOC = WrappedComponent => class AuthProvider extends Component {
              * See here for more info on account retrieval: 
              * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-common/docs/Accounts.md
              */
-            tokenRequest.account = msalApp.getAccountByUsername(this.state.username);
+            silentRequest.account = msalApp.getAccountByUsername(this.state.username);
 
-            return msalApp.acquireTokenSilent(tokenRequest).catch(error => {
-                console.warn("silent token acquisition fails. acquiring token using redirect");
+            return msalApp.acquireTokenSilent(silentRequest).catch(error => {
+                console.warn("silent token acquisition fails. acquiring token using interactive method");
                 if (error) {
                     // fallback to interaction when silent call fails
+                    tokenRequest.account = msalApp.getAccountByUsername(this.state.username);
+
                     return msalApp.acquireTokenPopup(tokenRequest)
                         .then(this.handleResponse)
                         .catch(error => {
@@ -112,7 +113,7 @@ const AuthHOC = WrappedComponent => class AuthProvider extends Component {
         return msalApp.loginPopup(loginRequest)
             .then(this.handleResponse)
             .catch(err => {
-                this.setState({err: err.errorMessage});
+                this.setState({error: err.errorMessage});
             });
     }
 

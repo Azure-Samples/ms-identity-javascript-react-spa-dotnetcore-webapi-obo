@@ -15,7 +15,7 @@ import './App.css';
 class App extends React.Component {
 
     handleSignIn = () => {
-        this.props.signIn().then((response) => {
+        this.props.signIn().then(() => {
             if (this.props.account) {
                 this.props.updateAccount(this.props.account);
             } else {

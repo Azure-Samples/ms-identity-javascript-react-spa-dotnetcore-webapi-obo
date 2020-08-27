@@ -134,7 +134,7 @@ There are two projects in this sample. Each needs to be separately registered in
 1. Select **New registration**.
 1. When the **Register an application page** appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `ProfileAPI`.
-   - Change **Supported account types** to **Accounts in any organizational directory and personal Microsoft accounts (e.g. Skype, Xbox, Outlook.com)**.
+   - Change **Supported account types** to **Personal Microsoft accounts only**.
    - Select **Register** to create the application.
 1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the configuration file for this projects.
 1. From the **Certificates & secrets** page, in the **Client secrets** section, choose **New client secret**:

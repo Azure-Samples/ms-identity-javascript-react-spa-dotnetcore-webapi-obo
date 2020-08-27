@@ -1,8 +1,15 @@
 # CHANGELOG
 
+## 08/27/2020
+
+* Updated MSAL.js to 2.1.0.
+* Updated Microsoft.Identity.Web to 0.3-preview.
+* Revised acquireTokenSilent() API.
+* Minor correction in README.md.
+
 ## 08/05/2020
 
-* Updated MSAL.js to 2.1.
+* Updated MSAL.js to 2.0.1
 * Added issue & PR templates.
 * Refactored authProvider.js
 * Minor README corrections.
