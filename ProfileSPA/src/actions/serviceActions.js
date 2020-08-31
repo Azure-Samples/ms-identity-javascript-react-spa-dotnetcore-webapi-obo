@@ -40,7 +40,6 @@ export const postProfile = (profile) => (dispatch, getState) => {
         body: JSON.stringify(profile)
     }).then(response => {
         if (response && response.status !== 404) {
-            console.log(response)
             return response.json();
         }
     })
