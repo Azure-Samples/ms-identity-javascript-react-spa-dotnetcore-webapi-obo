@@ -18,7 +18,7 @@ import {
 
 class ProfileContainer extends Component {
     
-    componentWillMount = () => {
+    componentDidMount = () => {
 
         // acquire the token and update the store
         this.props.acquireToken().then((response) => {

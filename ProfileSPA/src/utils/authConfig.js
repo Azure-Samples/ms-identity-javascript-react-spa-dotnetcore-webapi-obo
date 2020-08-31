@@ -1,5 +1,5 @@
 // For a full list of msal.js configuration parameters, 
-// visit https://azuread.github.io/microsoft-authentication-library-for-js/docs/msal/modules/_authenticationparameters_.html
+// visit https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/configuration.md
 export const msalConfig = {
     auth: {
         clientId: "Enter the Client Id (aka 'Application ID')",
@@ -20,7 +20,7 @@ export const apiConfig = {
 
 /** 
  * Scopes you enter here will be consented once you authenticate. For a full list of available authentication parameters, 
- * visit https://azuread.github.io/microsoft-authentication-library-for-js/docs/msal/modules/_authenticationparameters_.html
+ * visit https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/configuration.md
  */
 export const loginRequest = {
     scopes: ["openid", "profile", "offline_access"]
@@ -29,4 +29,9 @@ export const loginRequest = {
 // Add here scopes for access token to be used at the API endpoints.
 export const tokenRequest = {
     scopes: [apiConfig.resourceScope]
+}
+
+// Add here scopes for silent token request
+export const silentRequest = {
+    scopes: ["openid", "profile", apiConfig.resourceScope]
 }

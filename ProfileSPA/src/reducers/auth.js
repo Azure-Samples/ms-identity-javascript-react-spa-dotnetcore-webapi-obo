@@ -13,13 +13,16 @@ export default (state = initialState, action={}) => {
                 account: action.payload, 
                 idToken: action.payload.idTokenClaims, 
                 accessToken: action.payload.accessToken,
-                isAuthenticated: true});
+                isAuthenticated: true
+            });
 
         case "UPDATE_ERROR":
-            return Object.assign({}, state, {error: action.payload, isAuthenticated: false});
+            return Object.assign({}, state, {
+                error: action.payload, 
+                isAuthenticated: false
+            });
 
         case "UPDATE_TOKEN":
-            console.log(action.payload)
             return Object.assign({}, state, {
                 idToken: action.payload.idTokenClaims,
                 accessToken: action.payload.accessToken
