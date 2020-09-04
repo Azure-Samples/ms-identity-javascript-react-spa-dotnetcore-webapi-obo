@@ -17,6 +17,7 @@ class App extends React.Component {
     handleSignIn = () => {
         this.props.signIn().then(() => {
             if (this.props.account) {
+                console.log(this.props)
                 this.props.updateAccount(this.props.account);
             } else {
                 if (this.props.error) {
@@ -52,14 +53,14 @@ class App extends React.Component {
                         
                     </Nav>
                     {
-                        this.props.auth.isAuthenticated ? 
+                        this.props.isAuthenticated ? 
                         <Button variant="info" onClick={this.handleSignOut}>Logout</Button> 
                         : 
                         <Button variant="outline-info" onClick={this.handleSignIn}>Login</Button>
                     }
                 </Navbar>
                 {
-                    this.props.auth.isAuthenticated ? 
+                    this.props.isAuthenticated ? 
                     <ProfileContainer 
                         acquireToken={this.props.acquireToken} 
                         updateToken={this.props.updateToken}

@@ -30,6 +30,7 @@ const AuthHOC = WrappedComponent => class AuthProvider extends Component {
             account: null,
             error: null,
             username: null,
+            isAuthenticated: false,
         };
     }
 
@@ -55,18 +56,21 @@ const AuthHOC = WrappedComponent => class AuthProvider extends Component {
 
         if (currentAccounts === null) {
             console.error("No accounts detected!");
+            return;
         } else if (currentAccounts.length > 1) {
             console.warn("Multiple accounts detected.");
             // Add choose account code here
             this.setState({
                 username: currentAccounts[0].username,
                 account: msalApp.getAccountByUsername(currentAccounts[0].username),
+                isAuthenticated: true
             });
         } else if (currentAccounts.length === 1) {
             this.setState({
                 username: currentAccounts[0].username,
                 account: msalApp.getAccountByUsername(currentAccounts[0].username),
-            })
+                isAuthenticated: true
+            });
         }
     }
 
@@ -75,6 +79,7 @@ const AuthHOC = WrappedComponent => class AuthProvider extends Component {
             this.setState({
                 account: response.account,
                 username: response.account.username,
+                isAuthenticated: true
             });
         } else {
             this.getAccounts();
