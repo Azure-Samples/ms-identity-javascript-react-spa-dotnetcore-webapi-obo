@@ -17,7 +17,6 @@ class App extends React.Component {
     handleSignIn = () => {
         this.props.signIn().then(() => {
             if (this.props.account) {
-                console.log(this.props)
                 this.props.updateAccount(this.props.account);
             } else {
                 if (this.props.error) {
