@@ -232,6 +232,7 @@ npm start
 5. Submit your changes. When you sign-in next time, the application will recognize you and show you the profile associated with your Id in the database.
 
 > :information_source: Did the sample not work for you as expected? Then please reach out to us using the [GitHub Issues](../issues) page.
+
 > :information_source: Consider taking a moment to [share your experience with us](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR73pcsbpbxNJuZCMKN0lURpUM1QwMTZZSDMwSE81MEw5QzQ5SzM4WjZZQyQlQCN0PWcu).
 
 ## Debugging the sample
