@@ -1,4 +1,4 @@
-// For a full list of msal.js configuration parameters, 
+// For a full list of MSAL.js configuration parameters, 
 // visit https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/configuration.md
 export const msalConfig = {
     auth: {
@@ -12,10 +12,10 @@ export const msalConfig = {
     },
 }
 
-// Coordinates and required scopes for your web api
+// Coordinates and required scopes for your web API
 export const apiConfig = {
     resourceUri: "https://localhost:44351/api/profile",
-    resourceScope: "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'"
+    resourceScopes: ["Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'"]
 }
 
 /** 
@@ -23,15 +23,15 @@ export const apiConfig = {
  * visit https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/configuration.md
  */
 export const loginRequest = {
-    scopes: ["openid", "profile", "offline_access"]
+    scopes: ["openid", "profile", "offline_access", ...apiConfig.resourceScopes]
 }
 
 // Add here scopes for access token to be used at the API endpoints.
 export const tokenRequest = {
-    scopes: [apiConfig.resourceScope]
+    scopes: [...apiConfig.resourceScopes]
 }
 
 // Add here scopes for silent token request
 export const silentRequest = {
-    scopes: ["openid", "profile", apiConfig.resourceScope]
+    scopes: ["openid", "profile", ...apiConfig.resourceScopes]
 }

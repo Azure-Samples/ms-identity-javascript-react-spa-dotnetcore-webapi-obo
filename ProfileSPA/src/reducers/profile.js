@@ -9,7 +9,7 @@ const initialState = {
     firstLogin: true,
 };
 
-export default (state = initialState, action={}) => {
+export default (state = initialState, action = {}) => {
     switch (action.type) {
         case "UPDATE_PROFILE":
             return Object.assign({}, state, {

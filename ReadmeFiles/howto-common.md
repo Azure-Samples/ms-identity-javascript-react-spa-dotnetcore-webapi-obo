@@ -1,7 +1,9 @@
 
 # How to configure this sample to allow sign-ins with work and school accounts
 
-The first thing you need to do is to replace the `/customers` endpoint (Which works only with personal Microsoft accounts) with your Tenant ID.
+The note about azure work and school accounts is entirely due to this particular scenario and how the sample was configured. Other than that, there is nothing preventing you from using it with work and school accounts, with a little bit of modification.
+
+So the first thing to change is to use the **tenanted endpoint** (i.e. with your tenantId), instead of the `/customers` endpoint (works only with personal MS accounts).
 
 In `ProfileAPI\appsettings.json`:
 

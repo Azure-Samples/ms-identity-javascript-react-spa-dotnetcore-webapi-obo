@@ -7,16 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.9" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.9" Condition="'$(Configuration)' == 'Debug'" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.12" Condition="'$(Configuration)' == 'Debug'" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.12" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="1.2.0" />
-    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.12" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="1.6.0" />
+    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.6.0" />
   </ItemGroup>
 
 </Project>

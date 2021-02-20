@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 20/02/2021
+
+* Updated MSAL.js to 2.11 and M.I.W to 1.6
+* Revised README.md
+
 ## 10/23/2020
 
 * Updated MSAL.js to 2.4 and M.I.W to 1.2

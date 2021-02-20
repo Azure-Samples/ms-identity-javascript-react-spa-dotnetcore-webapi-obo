@@ -7,6 +7,7 @@ param(
     [string] $azureEnvironmentName
 )
 
+#Requires -Modules AzureAD -RunAsAdministrator
 
 <#
  This script creates the Azure AD applications needed for this sample and updates the configuration files
@@ -267,7 +268,6 @@ Function ConfigureApplications
    # create the application 
    $serviceAadApplication = New-AzureADApplication -DisplayName "ProfileAPI" `
                                                    -HomePage "https://localhost:44351/api/profile/" `
-                                                   -AvailableToOtherTenants $True `
                                                    -PasswordCredentials $key `
                                                    -PublicClient $False
 
@@ -343,8 +343,6 @@ Function ConfigureApplications
                                                   -HomePage "http://localhost:3000" `
                                                   -ReplyUrls "http://localhost:3000" `
                                                   -IdentifierUris "https://$tenantName/ProfileSPA" `
-                                                  -AvailableToOtherTenants $True `
-                                                  -Oauth2AllowImplicitFlow $true `
                                                   -PublicClient $False
 
    # create the service principal of the newly created application 
@@ -404,21 +402,18 @@ Function ConfigureApplications
    # Update config file for 'client'
    $configFile = $pwd.Path + "\..\ProfileSPA\src\utils\authConfig.js"
    Write-Host "Updating the sample code ($configFile)"
-   $dictionary = @{ "Enter the Client Id (aka 'Application ID')" = $clientAadApplication.AppId;"Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'" = ("api://"+$serviceAadApplication.AppId+"/access_as_user");"Enter the Web APIs base address, e.g. 'https://localhost:44351/api/profile'" = $serviceAadApplication.HomePage };
+   $dictionary = @{ "Enter the Client Id (aka 'Application ID')" = $clientAadApplication.AppId;"Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'" = ("api://"+$serviceAadApplication.AppId+"/access_as_user") };
    ReplaceInTextFile -configFilePath $configFile -dictionary $dictionary
    Write-Host ""
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
    Write-Host "IMPORTANT: Please follow the instructions below to complete a few manual step(s) in the Azure portal":
    Write-Host "- For 'service'"
    Write-Host "  - Navigate to '$servicePortalUrl'"
-   Write-Host "  - Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'." -ForegroundColor Red 
    Write-Host "  - Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2." -ForegroundColor Red 
    Write-Host "  - Navigate to the Manifest page, find the entry for 'KnownClientApplications' and add the clientId of ProfileSPA." -ForegroundColor Red 
    Write-Host "- For 'client'"
    Write-Host "  - Navigate to '$clientPortalUrl'"
-   Write-Host "  - Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'." -ForegroundColor Red 
-   Write-Host "  - Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2." -ForegroundColor Red 
-   Write-Host "  - Navigate 'ProfileSPA/src/utils/authConfig.js' and convert the 'resourceScope' value into 'api://{client_id}/.default' from 'api://{client_id}/access_as_user'" -ForegroundColor Red 
+   Write-Host "  - Navigate to the Manifest page and set the value 'replyUrlsWithType' as 'Spa'." -ForegroundColor Red 
 
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
      
