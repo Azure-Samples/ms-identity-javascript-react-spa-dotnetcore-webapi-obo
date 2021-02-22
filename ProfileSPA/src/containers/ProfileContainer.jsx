@@ -17,7 +17,7 @@ import {
 } from '../actions/serviceActions';
 
 class ProfileContainer extends Component {
-    
+
     componentDidMount = () => {
 
         // acquire the token and update the store
@@ -55,7 +55,7 @@ class ProfileContainer extends Component {
             case 3:
                 component = <ProfileView {...this.props} />;
                 break;
-            default: 
+            default:
                 component = <div>No Content</div>;
         }
 

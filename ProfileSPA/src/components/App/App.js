@@ -2,11 +2,11 @@ import React from "react";
 import PropTypes from "prop-types";
 import ProfileContainer from '../../containers/ProfileContainer';
 
-import { 
-    Nav, 
-    Navbar, 
-    Button, 
-    Jumbotron 
+import {
+    Nav,
+    Navbar,
+    Button,
+    Jumbotron
 } from 'react-bootstrap';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -22,7 +22,7 @@ class App extends React.Component {
                 if (this.props.error) {
                     this.props.updateError(this.props.error);
                 } else {
-                    this.props.updateError({errorMessage: 'Sign-in failed. Please try again.'});
+                    this.props.updateError({ errorMessage: 'Sign-in failed. Please try again.' });
                 }
             }
         });
@@ -36,7 +36,7 @@ class App extends React.Component {
                 if (this.props.error) {
                     this.props.updateError(this.props.error);
                 } else {
-                    this.props.updateError({errorMessage: 'Sign-out failed. Please try again.'});
+                    this.props.updateError({ errorMessage: 'Sign-out failed. Please try again.' });
                 }
             }
         });
@@ -47,34 +47,34 @@ class App extends React.Component {
         return (
             <div className="app">
                 <Navbar className="navbar" bg="dark" variant="dark">
-                    <Navbar.Brand href="/">Microsoft Identity Platform</Navbar.Brand>
+                    <Navbar.Brand href="/">Microsoft identity platform</Navbar.Brand>
                     <Nav className="mr-auto">
-                        
+
                     </Nav>
                     {
-                        this.props.isAuthenticated ? 
-                        <Button variant="info" onClick={this.handleSignOut}>Logout</Button> 
-                        : 
-                        <Button variant="outline-info" onClick={this.handleSignIn}>Login</Button>
+                        this.props.isAuthenticated ?
+                            <Button variant="info" onClick={this.handleSignOut}>Logout</Button>
+                            :
+                            <Button variant="outline-info" onClick={this.handleSignIn}>Login</Button>
                     }
                 </Navbar>
                 {
-                    this.props.isAuthenticated ? 
-                    <ProfileContainer 
-                        acquireToken={this.props.acquireToken} 
-                        updateToken={this.props.updateToken}
-                    /> 
-                    : 
-                    <Jumbotron className="welcome">
-                        <h1>Azure AD On-Behalf-Of Flow</h1>
-                        <p>A React & Redux single-page application authorizing an ASP.NET Core Web API
+                    this.props.isAuthenticated ?
+                        <ProfileContainer
+                            acquireToken={this.props.acquireToken}
+                            updateToken={this.props.updateToken}
+                        />
+                        :
+                        <Jumbotron className="welcome">
+                            <h1>Azure AD On-Behalf-Of Flow</h1>
+                            <p>A React & Redux single-page application authorizing an ASP.NET Core Web API
                         to call MS Graph API on its behalf using the MS Graph SDK.</p>
-                        <Button variant="primary" 
-                            onClick={() => window.open("https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow", "_blank")}
-                        >Learn More</Button> 
-    
-                    </Jumbotron>
-                } 
+                            <Button variant="primary"
+                                onClick={() => window.open("https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow", "_blank")}
+                            >Learn More</Button>
+
+                        </Jumbotron>
+                }
             </div>
         );
     }

@@ -1,9 +1,9 @@
 {
   "Sample": {
-    "Title": "A React & Redux single-page application authorizing an ASP.NET Core Web API to call MS Graph API on its behalf using the MS Graph SDK",
+    "Title": "A React & Redux single-page application authorizing an ASP.NET Core web API to call MS Graph API on its behalf using MSAL",
     "Level": 200,
     "Client": "React & Redux SPA",
-    "Service": ".NET Core Web API",
+    "Service": ".NET Core web API",
     "RepositoryUrl": "ms-identity-javascript-react-spa-dotnetcore-webapi-obo",
     "Endpoint": "AAD v2.0"
   },
@@ -13,7 +13,7 @@
       "Name": "ProfileAPI",
       "Kind": "WebApi",
       "PasswordCredentials": "Auto",
-      "Audience": "AzureADMultipleOrgs",
+      "Audience": "PersonalMicrosoftAccount",
       "HomePage": "https://localhost:44351/api/profile/",
       "RequiredResourcesAccess": [
         {
@@ -22,9 +22,6 @@
         }
       ],
       "ManualSteps": [
-        {
-          "Comment": "Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'."
-        },
         {
           "Comment": "Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2."
         },
@@ -37,8 +34,7 @@
       "Id": "client",
       "Name": "ProfileSPA",
       "Kind": "SinglePageApplication",
-      "Audience": "AzureADMultipleOrgs",
-      "Oauth2AllowImplicitFlow": true,
+      "Audience": "PersonalMicrosoftAccount",
       "HomePage": "http://localhost:3000",
       "ReplyUrls": "http://localhost:3000",
       "RequiredResourcesAccess": [
@@ -53,13 +49,7 @@
       ],
       "ManualSteps": [
         {
-          "Comment": "Navigate to the Manifest page and change 'signInAudience' to 'AzureADandPersonalMicrosoftAccount'."
-        },
-        {
-          "Comment": "Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2."
-        },
-        {
-          "Comment": "Navigate 'ProfileSPA/src/utils/authConfig.js' and convert the 'resourceScope' value into 'api://{client_id}/.default' from 'api://{client_id}/access_as_user'"
+          "Comment": "Navigate to the Manifest page and set the value 'replyUrlsWithType' as 'Spa'."
         }
       ]
     }
