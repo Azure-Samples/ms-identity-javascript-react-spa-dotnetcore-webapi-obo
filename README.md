@@ -22,6 +22,8 @@ This sample demonstrates a React & Redux single-page application which lets a us
 
 The web API's call to the Microsoft Graph API is made using the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
 
+> :information_source: This sample is configured to allow sign-ins with *personal Microsoft accounts* **ONLY** using the `/consumers` endpoint. If you would like to allow sign-ins with work and school accounts in your tenant, see [this note](./ReadmeFiles/howto-common.md). Learn more about [supported account](https://docs.microsoft.com/azure/active-directory/develop/v2-supported-account-types) types and [validation differences between them](https://docs.microsoft.com/azure/active-directory/develop/supported-accounts-validation).
+
 ## Key concepts
 
 This sample demonstrates the following Azure AD and Microsoft Identity Platform workflows:
@@ -41,8 +43,6 @@ This sample demonstrates the following Azure AD and Microsoft Identity Platform 
 - To protect its endpoint and accept only the authorized calls, the ProfileAPI uses [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) and [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web).
 
 ![Topology](./ReadmeFiles/topology.png)
-
-> :information_source: This sample is configured to allow sign-ins with *personal Microsoft accounts* **ONLY** using the `/consumers` endpoint. If you would like to allow sign-ins with work and school accounts in your tenant, see [this note](./ReadmeFiles/howto-common.md). Learn more about [supported account](https://docs.microsoft.com/azure/active-directory/develop/v2-supported-account-types) types and [validation differences between them](https://docs.microsoft.com/azure/active-directory/develop/supported-accounts-validation).
 
 ### Contents
 
