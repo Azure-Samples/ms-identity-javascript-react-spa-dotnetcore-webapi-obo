@@ -70,11 +70,11 @@ class ProfileContainer extends Component {
 const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => ({
-    updateProfile: (payload) => {
-        dispatch(updateProfile(payload));
-    },
     updateUI: (payload) => {
         dispatch(updateUI(payload));
+    },
+    updateProfile: (payload) => {
+        dispatch(updateProfile(payload));
     },
     getProfile: (id) => {
         dispatch(getProfile(id));

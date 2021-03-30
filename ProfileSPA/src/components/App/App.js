@@ -67,8 +67,8 @@ class App extends React.Component {
                         :
                         <Jumbotron className="welcome">
                             <h1>Azure AD On-Behalf-Of Flow</h1>
-                            <p>A React & Redux single-page application authorizing an ASP.NET Core Web API
-                        to call MS Graph API on its behalf using the MS Graph SDK.</p>
+                            <p>A React & Redux single-page application authorizing an ASP.NET Core web API
+                        to call the Microsoft Graph API on-behalf-of a user via Microsoft Graph SDK.</p>
                             <Button variant="primary"
                                 onClick={() => window.open("https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow", "_blank")}
                             >Learn More</Button>

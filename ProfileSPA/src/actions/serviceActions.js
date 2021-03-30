@@ -46,7 +46,7 @@ export const postProfile = (profile) => (dispatch, getState) => {
     })
     .then((response) => {
         console.log(response)
-        if (response === 'interaction required') {
+        if (response === 'interaction_required') {
             // trigger interaction
         } else {
             dispatch(updateProfile(response))

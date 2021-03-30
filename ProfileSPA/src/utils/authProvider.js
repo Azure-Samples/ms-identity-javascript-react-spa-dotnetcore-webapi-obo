@@ -125,10 +125,10 @@ const AuthHOC = WrappedComponent => class AuthProvider extends Component {
 
     signOut = async () => {
         const logoutRequest = {
-            account: msalApp.getAccountByUsername(this.state.username)
+            account: msalApp.getAccountByUsername(this.state.username),
         };
 
-        return msalApp.logout(logoutRequest);
+        return (await msalApp.logoutRedirect(logoutRequest));
     }
 
     render() {

@@ -1,6 +1,6 @@
 {
   "Sample": {
-    "Title": "A React & Redux single-page application authorizing an ASP.NET Core web API to call MS Graph API on its behalf using MSAL",
+    "Title": "React & Redux single-page application authorizing an ASP.NET Core web API to call MS Graph API on users' behalf using MSAL",
     "Level": 200,
     "Client": "React & Redux SPA",
     "Service": ".NET Core web API",
@@ -57,7 +57,7 @@
   "CodeConfiguration": [
     {
       "App": "service",
-      "SettingKind": "Text",
+      "SettingKind": "JSON",
       "SettingFile": "\\..\\ProfileAPI\\appsettings.json",
       "Mappings": [
         {

@@ -30,13 +30,13 @@ This sample demonstrates the following Azure AD and Microsoft Identity Platform 
 
 - How to sign-in & sign-out.
 - How to acquire an access token.
-- How to recognize a user from an id token's "oid" claim.
+- How to recognize a user from the **oid** claim in ID Tokens.
 - How to protect and call a web API.
-- How to authorize web API a to act on a user's behalf.
+- How to authorize web API a to act on a user's behalf to call another web API.
 
 ### Scenario
 
-- The sample implements an **onboarding** scenario where a profile is created for a new user whose fields are pre-populated by the available information about the user on MS Graph API.
+- The sample implements an **onboarding** scenario where a profile is created for a new user whose fields are pre-populated by the available information about the user on Microsoft Graph.
 - The **ProfileSPA** uses [MSAL.js](https://github.com/AzureAD/microsoft-authentication-library-for-js) to authenticate a user and [React-Redux](https://react-redux.js.org/) to store id and access tokens. (:warning: if you do use [Redux DevTools](https://github.com/zalmoxisus/redux-devtools-extension), remember to disable it in production to avoid exposing your store.)
 - Once the user authenticates, **ProfileSPA** obtains an [access token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from Azure AD.
 - The access token is then used to authorize the **ProfileAPI** to call MS Graph API **on user's behalf**. In order to call MS Graph API, **ProfileAPI** uses the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
@@ -49,7 +49,7 @@ This sample demonstrates the following Azure AD and Microsoft Identity Platform 
 | File/folder          | Description                                               |
 |----------------------|-----------------------------------------------------------|
 | `AppCreationScripts` | Contains Powershell scripts to automate app registration. |
-| `ReadmeFiles`        | Sample readme files.                                      |
+| `ReadmeFiles`        | Contains illustrations and misc. files.                   |
 | `ProfileAPI`         | Source code of the ProfileAPI.                            |
 | `ProfileSPA`         | Source code of the ProfileSPA.                            |
 
