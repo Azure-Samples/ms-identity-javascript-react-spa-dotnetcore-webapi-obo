@@ -203,7 +203,7 @@ There are two projects in this sample. Each needs to be separately registered in
 
 >In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
-1. Open the `ProfileSPA\src\utils\authConfig.js` file
+1. Open the `ProfileSPA\src\authConfig.js` file
 1. Find the key `clientId` and replace the existing value with the application ID (clientId) of the `ProfileSPA` application copied from the Azure portal.
 1. Find the key `redirectUri` and replace the existing value with the base address of the ProfileSPA project (by default `http://localhost:3000/`).
 1. Find the key `resourceUri` and replace the existing value with the base address of the ProfileAPI project (by default `https://localhost:44351/api/profile`).
