@@ -4,7 +4,7 @@ export const msalConfig = {
     auth: {
         clientId: "Enter the Client Id (aka 'Application ID')",
         authority: "https://login.microsoftonline.com/consumers",
-        redirectUri: "http://localhost:3000"
+        redirectUri: "/"
     },
     cache: {
         cacheLocation: "localStorage", // This configures where your cache will be stored
@@ -23,7 +23,7 @@ export const apiConfig = {
  * visit https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/configuration.md
  */
 export const loginRequest = {
-    scopes: ["openid", "profile", "offline_access", ...apiConfig.resourceScopes]
+    scopes: ["offline_access", ...apiConfig.resourceScopes]
 }
 
 // Add here scopes for access token to be used at the API endpoints.

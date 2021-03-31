@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import { InteractionRequiredAuthError, InteractionStatus  } from "@azure/msal-browser";
+import { withMsal } from "@azure/msal-react";
+
 import ProfileView from '../components/profile/profileView/ProfileView';
 import ProfileEdit from '../components/profile/profileEdit/ProfileEdit';
 import ProfileRegister from '../components/profile/profileRegister';
@@ -16,33 +19,61 @@ import {
     putProfile,
 } from '../actions/serviceActions';
 
+import { tokenRequest } from '../authConfig';
+
 class ProfileContainer extends Component {
 
-    componentDidMount = () => {
+    componentDidMount() {
+        if (this.props.msalContext.accounts[0] && this.props.msalContext.inProgress === InteractionStatus.None) {
+            this.props.msalContext.instance.acquireTokenSilent({
+                ...tokenRequest,
+                account: this.props.msalContext.accounts[0]
+            }).then((response) => {
 
-        // acquire the token and update the store
-        this.props.acquireToken().then((response) => {
-            if (response) {
-                // set access token
                 this.props.updateToken(response);
 
                 if (this.props.auth.idToken) {
                     // Our mock database assign user Ids based on MS Graph API account id, which corresponds to the "oid" claim in the id_token
                     // visit https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens for more information
-                    let tokenOID = this.props.auth.idToken.oid.replace(/-/gi, ''); // removing dashes
+                    let tokenOID = response.idTokenClaims['oid'].replace(/-/gi, ''); // removing dashes
 
                     // check if user already exists
                     try {
-                        this.props.getProfile(tokenOID);
+                        this.props.getProfile(tokenOID, response.accessToken);
                     } catch (err) {
                         console.log(err);
                     }
                 }
-            }
-        });
+            }).catch((error) => {
+                // in case if silent token acquisition fails, fallback to an interactive method
+                if (error instanceof InteractionRequiredAuthError) {
+                    if (this.props.msalContext.accounts[0] && this.props.msalContext.inProgress === InteractionStatus.None) {
+                        instance.acquireTokenPopup({
+                            ...tokenRequest,
+                        }).then((response) => {
+                            this.props.updateToken(response);
+
+                            if (this.props.auth.idToken) {
+                                // Our mock database assign user Ids based on MS Graph API account id, which corresponds to the "oid" claim in the id_token
+                                // visit https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens for more information
+                                let tokenOID = response.idTokenClaims['oid'].replace(/-/gi, ''); // removing dashes
+            
+                                // check if user already exists
+                                try {
+                                    this.props.getProfile(tokenOID, response.accessToken);
+                                } catch (err) {
+                                    console.log(err);
+                                }
+                            }
+                        }).catch(error => console.log(error));
+                    }
+                }
+            });
+        }
     }
 
     render() {
+
         let component = null;
 
         switch (this.props.ui.component) {
@@ -87,4 +118,4 @@ const mapDispatchToProps = (dispatch) => ({
     },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProfileContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(withMsal(ProfileContainer));

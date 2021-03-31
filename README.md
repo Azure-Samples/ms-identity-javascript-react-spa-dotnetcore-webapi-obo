@@ -4,7 +4,7 @@ languages:
 - javascript
 - csharp
 products:
-- nodejs
+- msal-react
 - ms-graph
 - azure-active-directory
 - dotnet-core
@@ -18,9 +18,7 @@ urlFragment: "ms-identity-javascript-react-spa-dotnetcore-webapi-obo"
 
 ## Overview
 
-This sample demonstrates a React & Redux single-page application which lets a user authenticate and then obtain an access token to call an ASP.NET Core web API, protected by [Azure Active Directory (Azure AD)](https://azure.microsoft.com/services/active-directory/). The web API then calls the [MS Graph API](https://developer.microsoft.com/graph) on the signed-in user's behalf using the [on-behalf-of flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow).
-
-The web API's call to the Microsoft Graph API is made using the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
+This sample demonstrates a React & Redux single-page application which lets a user authenticate and then obtain an access token to call an ASP.NET Core web API, protected by [Azure Active Directory (Azure AD)](https://azure.microsoft.com/services/active-directory/). The web API then calls the [Microsoft Graph API](https://developer.microsoft.com/graph) on the signed-in user's behalf using the [OAuth 2.0 on-behalf-of flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow). The web API's call to Microsoft Graph is made using the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
 
 > :information_source: This sample is configured to allow sign-ins with *personal Microsoft accounts* **ONLY** using the `/consumers` endpoint. If you would like to allow sign-ins with work and school accounts in your tenant, see [this note](./ReadmeFiles/howto-common.md). Learn more about [supported account](https://docs.microsoft.com/azure/active-directory/develop/v2-supported-account-types) types and [validation differences between them](https://docs.microsoft.com/azure/active-directory/develop/supported-accounts-validation).
 
@@ -37,7 +35,7 @@ This sample demonstrates the following Azure AD and Microsoft Identity Platform 
 ### Scenario
 
 - The sample implements an **onboarding** scenario where a profile is created for a new user whose fields are pre-populated by the available information about the user on Microsoft Graph.
-- The **ProfileSPA** uses [MSAL.js](https://github.com/AzureAD/microsoft-authentication-library-for-js) to authenticate a user and [React-Redux](https://react-redux.js.org/) to store id and access tokens. (:warning: if you do use [Redux DevTools](https://github.com/zalmoxisus/redux-devtools-extension), remember to disable it in production to avoid exposing your store.)
+- The **ProfileSPA** uses [MSAL React (Preview)](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-react) to authenticate a user and [React-Redux](https://react-redux.js.org/) to store id and access tokens. (:warning: if you do use [Redux DevTools](https://github.com/zalmoxisus/redux-devtools-extension), remember to disable it in production to avoid exposing your store.)
 - Once the user authenticates, **ProfileSPA** obtains an [access token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from Azure AD.
 - The access token is then used to authorize the **ProfileAPI** to call MS Graph API **on user's behalf**. In order to call MS Graph API, **ProfileAPI** uses the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
 - To protect its endpoint and accept only the authorized calls, the ProfileAPI uses [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) and [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web).
@@ -50,8 +48,8 @@ This sample demonstrates the following Azure AD and Microsoft Identity Platform 
 |----------------------|-----------------------------------------------------------|
 | `AppCreationScripts` | Contains Powershell scripts to automate app registration. |
 | `ReadmeFiles`        | Contains illustrations and misc. files.                   |
-| `ProfileAPI`         | Source code of the ProfileAPI.                            |
-| `ProfileSPA`         | Source code of the ProfileSPA.                            |
+| `ProfileAPI`         | Source code of the ProfileAPI project.                    |
+| `ProfileSPA`         | Source code of the ProfileSPA project.                    |
 
 ## Setup
 
@@ -61,8 +59,8 @@ This sample demonstrates the following Azure AD and Microsoft Identity Platform 
 - [Dotnet Core SDK](https://dotnet.microsoft.com/download) must be installed to run this sample.
 - An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
 - A **personal Microsoft account** is needed. This sample will not work with **work or school accounts** (see [note](./ReadmeFiles/howto-common.md)).
-- We recommend the [VS Code](https://code.visualstudio.com/download) for running and debugging this cross-platform application.
-- We recommend the [Redux DevTools](https://github.com/zalmoxisus/redux-devtools-extension) browser extension for monitoring your Redux store (:warning: remember to disable it in production)
+- [VS Code](https://code.visualstudio.com/download) for running and debugging this cross-platform application.
+- [Redux DevTools](https://github.com/zalmoxisus/redux-devtools-extension) browser extension for monitoring your Redux store (:warning: remember to disable it in production)
 
 ### Steps
 
@@ -209,7 +207,7 @@ There are two projects in this sample. Each needs to be separately registered in
 1. Find the key `clientId` and replace the existing value with the application ID (clientId) of the `ProfileSPA` application copied from the Azure portal.
 1. Find the key `redirectUri` and replace the existing value with the base address of the ProfileSPA project (by default `http://localhost:3000/`).
 1. Find the key `resourceUri` and replace the existing value with the base address of the ProfileAPI project (by default `https://localhost:44351/api/profile`).
-1. Find the key `resourceScopes` and replace the existing value with *Scope* you created earlier `api://{client_id}/.default`.
+1. Find the key `resourceScopes` and replace the existing value with the scope you created earlier e.g. `api://{client_id}/.default`.
 
 ### Run the sample
 
@@ -232,8 +230,8 @@ In a separate console window, execute the following commands
 
 1. Open your browser and navigate to `http://localhost:3000`.
 2. Sign-in using the button on top-right corner.
-3. If this is your first time sign-in, you will be redirected to the onboarding page (the app will try to make a **GET** request: if this is the first time, it will fail -this is expected).
-4. Hit **Accept** and a new account will be created for you in the database, pre-populated by the information about you fetched from the MS Graph API.
+3. If this is your first sign-in, you will be redirected to the onboarding page (the app will try to make a **GET** request: if this is the first time, it will fail -this is expected).
+4. Hit **Accept** and a new account will be created for you in the database, pre-populated by the information about you fetched from Microsoft Graph.
 5. Submit your changes. When you sign-in next time, the application will recognize you and show you the profile associated with your ID in the database.
 
 ![Screenshot](./ReadmeFiles/screenshot.png)

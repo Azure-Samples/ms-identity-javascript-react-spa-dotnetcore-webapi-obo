@@ -3,7 +3,7 @@ import {
     updateUI,
 } from './updateActions';
 
-import { apiConfig } from '../utils/authConfig';
+import { apiConfig } from '../authConfig';
 
 export const getProfile = (id) => (dispatch, getState) => {
     return fetch(apiConfig.resourceUri + '/' + id, {
@@ -16,8 +16,7 @@ export const getProfile = (id) => (dispatch, getState) => {
         if (response && response.status !== 404) {
             return response.json();
         }
-    })
-    .then((response) => {
+    }).then((response) => {
         if (response) {
             dispatch(updateProfile(response));
 
@@ -26,8 +25,7 @@ export const getProfile = (id) => (dispatch, getState) => {
                 dispatch(updateUI(3));
             }
         }
-    })
-    .catch(err => console.log(err));
+    }).catch(err => console.log(err));
 };
 
 export const postProfile = (profile) => (dispatch, getState) => {
@@ -43,8 +41,7 @@ export const postProfile = (profile) => (dispatch, getState) => {
         if (response && response.status !== 404) {
             return response.json();
         }
-    })
-    .then((response) => {
+    }).then((response) => {
         console.log(response)
         if (response === 'interaction_required') {
             // trigger interaction
@@ -52,8 +49,7 @@ export const postProfile = (profile) => (dispatch, getState) => {
             dispatch(updateProfile(response))
             dispatch(updateUI(2))
         }
-    })
-    .catch(err => console.log(err))
+    }).catch(err => console.log(err))
 };
 
 export const putProfile = (profile) => (dispatch, getState) => {

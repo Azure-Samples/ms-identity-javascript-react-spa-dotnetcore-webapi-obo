@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import AuthProvider from "../utils/authProvider";
+import { MsalProvider } from '@azure/msal-react';
+
 import App from '../components/App/App';
 
 import {
@@ -13,9 +14,9 @@ import {
 class AppContainer extends Component {
     render() {
         return (
-            <div>
+            <MsalProvider instance={this.props.instance}>
                 <App {...this.props} />
-            </div>
+            </MsalProvider>
         );
     }
 }
@@ -35,4 +36,4 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 // AppContainer is a container component wrapped by HOC AuthProvider
-export default connect(mapStateToProps, mapDispatchToProps)(AuthProvider(AppContainer));
+export default connect(mapStateToProps, mapDispatchToProps)(AppContainer);
