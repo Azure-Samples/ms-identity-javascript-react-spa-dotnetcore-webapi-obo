@@ -23,7 +23,6 @@ Then in `ProfileSPA\src\utils\authConfig.js`:
     auth: {
         clientId: "YOUR_CLIENT_ID",
         authority: "https://login.microsoftonline.com/YOUR_TENANT_ID",
-        validateAuthority: true,
         redirectUri: "http://localhost:3000",
         navigateToLoginRequestUrl: false
     },
