@@ -289,28 +289,30 @@ Function ConfigureApplications
     # rename the user_impersonation scope if it exists to match the readme steps or add a new scope
     $scopes = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.OAuth2Permission]
    
+    # delete default scope i.e. User_impersonation
+    $scope = $serviceAadApplication.Oauth2Permissions | Where-Object { $_.Value -eq "User_impersonation" }
+    if($scope -ne $null)
+    {
+       # disable the scope
+       $scope.IsEnabled = $false
+       $scopes.Add($scope)
+       Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -Oauth2Permissions $scopes
+
+       # clear the scope
+       $scopes.Clear()
+       Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -Oauth2Permissions $scopes
+    }
+
     if ($scopes.Count -ge 0) 
     {
-        # add all existing scopes first
-        $serviceAadApplication.Oauth2Permissions | foreach-object { $scopes.Add($_) }
-
-        $scope = $serviceAadApplication.Oauth2Permissions | Where-Object { $_.Value -eq "User_impersonation" }
-
-        if ($scope -ne $null) 
-        {
-            $scope.Value = "access_as_user"
-        }
-        else 
-        {
-            # Add scope
-            $scope = CreateScope -value "access_as_user"  `
+             $scope = CreateScope -value access_as_user  `
                 -userConsentDisplayName "Access ProfileAPI"  `
                 -userConsentDescription "Allow the application to access ProfileAPI on your behalf."  `
                 -adminConsentDisplayName "Access ProfileAPI"  `
                 -adminConsentDescription "Allows the app to have the same access to information in the directory on behalf of the signed-in user."
             
-            $scopes.Add($scope)
-        }        
+                $scopes.Add($scope)
+    
     }
      
     # add/update scopes
@@ -396,13 +398,13 @@ Function ConfigureApplications
    # Update config file for 'service'
    $configFile = $pwd.Path + "\..\ProfileAPI\appsettings.json"
    Write-Host "Updating the sample code ($configFile)"
-   $dictionary = @{ "Domain" = $tenantName;"ClientId" = $serviceAadApplication.AppId;"ClientSecret" = $serviceAppKey };
+   $dictionary = @{ "Domain" = $tenantName;"ClientId" = $serviceAadApplication.AppId;"ClientSecret" = $serviceAppKey;"TenantId" = $tenantId };
    UpdateTextFile -configFilePath $configFile -dictionary $dictionary
 
    # Update config file for 'client'
    $configFile = $pwd.Path + "\..\ProfileSPA\src\utils\authConfig.js"
    Write-Host "Updating the sample code ($configFile)"
-   $dictionary = @{ "Enter the Client Id (aka 'Application ID')" = $clientAadApplication.AppId;"Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'" = ("api://"+$serviceAadApplication.AppId+"/access_as_user") };
+   $dictionary = @{ "Enter_the_Application_Id_Here" = $clientAadApplication.AppId;"Enter_the_Tenant_Info_Here" = $tenantId;"Enter_the_Application_Id_of_Service_Here" = $serviceAadApplication.AppId };
    ReplaceInTextFile -configFilePath $configFile -dictionary $dictionary
    Write-Host ""
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
@@ -416,7 +418,13 @@ Function ConfigureApplications
    Write-Host "  - Navigate to the Manifest page and set the value 'replyUrlsWithType' as 'Spa'." -ForegroundColor Red 
 
    Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
-     
+      if($isOpenSSL -eq 'Y')
+   {
+        Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+        Write-Host "You have generated certificate using OpenSSL so follow below steps: "
+        Write-Host "Install the certificate on your system from current folder."
+        Write-Host -ForegroundColor Green "------------------------------------------------------------------------------------------------" 
+   }
    Add-Content -Value "</tbody></table></body></html>" -Path createdApps.html  
 }
 

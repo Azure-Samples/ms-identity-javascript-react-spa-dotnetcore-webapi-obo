@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 08/04/2021
+
+* Updated MSAL.js to 2.13.1 and M.I.W to 1.8.2
+* Sample now targets work and school accounts, instead of personal Microsoft accounts.
+
 ## 20/02/2021
 
 * Updated MSAL.js to 2.11 and M.I.W to 1.6

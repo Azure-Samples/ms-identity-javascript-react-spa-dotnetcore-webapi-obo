@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "author": "derisen",
   "dependencies": {
-    "@azure/msal-browser": "^2.13.0",
+    "@azure/msal-browser": "^2.13.1",
     "bootstrap": "^4.5.0",
     "react": "^16.14.0",
     "react-bootstrap": "^1.2.2",
