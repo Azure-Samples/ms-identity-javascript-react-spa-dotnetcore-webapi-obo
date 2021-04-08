@@ -1,16 +1,16 @@
 {
-  "name": "profileapp",
-  "version": "0.1.0",
+  "name": "msal-react-obo",
+  "version": "1.0.0",
   "author": "derisen",
   "dependencies": {
-    "@azure/msal-browser": "^2.11.2",
+    "@azure/msal-browser": "^2.13.1",
     "bootstrap": "^4.5.0",
     "react": "^16.14.0",
     "react-bootstrap": "^1.2.2",
     "react-dom": "^16.14.0",
     "react-proptypes": "^1.0.0",
     "react-redux": "^7.2.0",
-    "react-scripts": "^3.4.4",
+    "react-scripts": "^4.0.3",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0"
   },

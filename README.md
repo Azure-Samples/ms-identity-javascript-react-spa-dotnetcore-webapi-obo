@@ -4,7 +4,6 @@ languages:
 - javascript
 - csharp
 products:
-- nodejs
 - ms-graph
 - azure-active-directory
 - dotnet-core
@@ -14,15 +13,11 @@ description: "This sample demonstrates a React & Redux single-page application a
 urlFragment: "ms-identity-javascript-react-spa-dotnetcore-webapi-obo"
 ---
 
-# A React & Redux single-page application authorizing an ASP.NET Core web API to call Microsoft Graph using on-behalf-of flow
+# React & Redux single-page application authorizing ASP.NET Core web API to call Microsoft Graph using on-behalf-of flow
 
 ## Overview
 
-This sample demonstrates a React & Redux single-page application which lets a user authenticate and then obtain an access token to call an ASP.NET Core web API, protected by [Azure Active Directory (Azure AD)](https://azure.microsoft.com/services/active-directory/). The web API then calls the [MS Graph API](https://developer.microsoft.com/graph) on the signed-in user's behalf using the [on-behalf-of flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow).
-
-The web API's call to the Microsoft Graph API is made using the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
-
-> :information_source: This sample is configured to allow sign-ins with *personal Microsoft accounts* **ONLY** using the `/consumers` endpoint. If you would like to allow sign-ins with work and school accounts in your tenant, see [this note](./ReadmeFiles/howto-common.md). Learn more about [supported account](https://docs.microsoft.com/azure/active-directory/develop/v2-supported-account-types) types and [validation differences between them](https://docs.microsoft.com/azure/active-directory/develop/supported-accounts-validation).
+This sample demonstrates a React & Redux single-page application which lets a user authenticate and obtain an access token to call an ASP.NET Core web API, protected by [Azure Active Directory (Azure AD)](https://azure.microsoft.com/services/active-directory/). The web API then calls the [Microsoft Graph API](https://developer.microsoft.com/graph) using the [on-behalf-of flow](https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow). The web API's call to the Microsoft Graph API is made using the [Microsoft Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
 
 ## Key concepts
 
@@ -30,16 +25,16 @@ This sample demonstrates the following Azure AD and Microsoft Identity Platform 
 
 - How to sign-in & sign-out.
 - How to acquire an access token.
-- How to recognize a user from an id token's "oid" claim.
+- How to recognize a user from the **oid** claim in ID tokens.
 - How to protect and call a web API.
-- How to authorize web API a to act on a user's behalf.
+- How to authorize web API a to act on a user's behalf to call another web API.
 
 ### Scenario
 
-- The sample implements an **onboarding** scenario where a profile is created for a new user whose fields are pre-populated by the available information about the user on MS Graph API.
-- The **ProfileSPA** uses [MSAL.js](https://github.com/AzureAD/microsoft-authentication-library-for-js) to authenticate a user and [React-Redux](https://react-redux.js.org/) to store id and access tokens. (:warning: if you do use [Redux DevTools](https://github.com/zalmoxisus/redux-devtools-extension), remember to disable it in production to avoid exposing your store.)
+- The sample implements an **onboarding** scenario where a profile is created for a new user whose fields are pre-populated by the available information about the user on Microsoft Graph.
+- The **ProfileSPA** uses [MSAL.js](https://github.com/AzureAD/microsoft-authentication-library-for-js) to authenticate a user and [React-Redux](https://react-redux.js.org/) to store ID and access tokens. (:warning: if you do use [Redux DevTools](https://github.com/zalmoxisus/redux-devtools-extension), remember to disable it in production to avoid exposing your store.)
 - Once the user authenticates, **ProfileSPA** obtains an [access token](https://docs.microsoft.com/azure/active-directory/develop/access-tokens) from Azure AD.
-- The access token is then used to authorize the **ProfileAPI** to call MS Graph API **on user's behalf**. In order to call MS Graph API, **ProfileAPI** uses the [MS Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
+- The access token is then used to authorize the **ProfileAPI** to call MS Graph API **on user's behalf**. In order to call MS Graph API, **ProfileAPI** uses the [Microsoft Graph SDK](https://docs.microsoft.com/graph/sdks/sdks-overview).
 - To protect its endpoint and accept only the authorized calls, the ProfileAPI uses [MSAL.NET](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet) and [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web).
 
 ![Topology](./ReadmeFiles/topology.png)
@@ -49,7 +44,7 @@ This sample demonstrates the following Azure AD and Microsoft Identity Platform 
 | File/folder          | Description                                               |
 |----------------------|-----------------------------------------------------------|
 | `AppCreationScripts` | Contains Powershell scripts to automate app registration. |
-| `ReadmeFiles`        | Sample readme files.                                      |
+| `ReadmeFiles`        | Contains illustrations and misc. files.                   |
 | `ProfileAPI`         | Source code of the ProfileAPI.                            |
 | `ProfileSPA`         | Source code of the ProfileSPA.                            |
 
@@ -60,13 +55,12 @@ This sample demonstrates the following Azure AD and Microsoft Identity Platform 
 - [Node.js](https://nodejs.org/en/download/) must be installed to run this sample.
 - [Dotnet Core SDK](https://dotnet.microsoft.com/download) must be installed to run this sample.
 - An Azure Active Directory (Azure AD) tenant. For more information on how to get an Azure AD tenant, see [How to get an Azure AD tenant](https://azure.microsoft.com/documentation/articles/active-directory-howto-tenant/).
-- A **personal Microsoft account** is needed. This sample will not work with **work or school accounts** (see [note](./ReadmeFiles/howto-common.md)).
-- We recommend the [VS Code](https://code.visualstudio.com/download) for running and debugging this cross-platform application.
-- We recommend the [Redux DevTools](https://github.com/zalmoxisus/redux-devtools-extension) browser extension for monitoring your Redux store (:warning: remember to disable it in production)
+- [VS Code](https://code.visualstudio.com/download) for running and debugging this cross-platform application.
+- [Redux DevTools](https://github.com/zalmoxisus/redux-devtools-extension) browser extension for monitoring your Redux store (:warning: remember to disable it in production)
 
 ### Steps
 
-Using a command line interface such as [VS Code integrated terminal](https://code.visualstudio.com/docs/editor/integrated-terminal), follow the steps below:
+Using a command line interface such as the [VS Code integrated terminal](https://code.visualstudio.com/docs/editor/integrated-terminal), follow the steps below:
 
 #### Step 1. Clone or download this repository
 
@@ -135,13 +129,13 @@ There are two projects in this sample. Each needs to be separately registered in
 
 </details>
 
-#### Register the service: ProfileAPI
+#### Register the service (ProfileAPI)
 
 1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
 1. Select **New registration**.
 1. When the **Register an application page** appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `ProfileAPI`.
-   - Change **Supported account types** to **Personal Microsoft accounts only**.
+   - Change **Supported account types** to **Accounts in this organizational directory only**.
    - Select **Register** to create the application.
 1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the configuration file for this projects.
 1. From the **Certificates & secrets** page, in the **Client secrets** section, choose **New client secret**:
@@ -162,6 +156,8 @@ There are two projects in this sample. Each needs to be separately registered in
    - Enter the following parameters
      - for **Scope name** use `access_as_user`
      - Keep **Admins and users** for **Who can consent**
+     - in **Admin consent display name** type `Access ProfileAPI as a user`
+     - in **Admin consent description** type `Accesses the ProfileAPI web API as a user`
      - in **User consent display name** type `Access ProfileAPI as a user`
      - in **User consent description** type `Accesses the ProfileAPI web API as a user`
      - Keep **State** as **Enabled**
@@ -172,17 +168,18 @@ There are two projects in this sample. Each needs to be separately registered in
 > In the steps below, "ClientID" is the same as "Application ID" or "AppId".
 
 1. Open the `ProfileAPI\appsettings.json` file
-1. Find the app key `Domain` and replace the existing value with your Azure AD tenant name.
-1. Find the app key `ClientId` and replace the existing value with the application ID (clientId) of the `ProfileAPI` application copied from the Azure portal.
-1. Find the app key `ClientSecret` and replace the existing value with the Client Secret of the `ProfileAPI` application copied from the Azure portal.
+1. Find the key `Domain` and replace the existing value with your Azure AD tenant name.
+1. Find the key `ClientId` and replace the existing value with the application ID (clientId) of the `ProfileAPI` application copied from the Azure portal.
+1. Find the key `ClientSecret` and replace the existing value with the client Secret of the `ProfileAPI` application copied from the Azure portal.
+1. Find the key `TenantId` and replace the existing value with the ID of your Azure tenant.
 
-#### Register the client: ProfileSPA
+#### Register the client (ProfileSPA)
 
 1. Navigate to the Microsoft identity platform for developers [App registrations](https://go.microsoft.com/fwlink/?linkid=2083908) page.
 1. Select **New registration**.
 1. When the **Register an application page** appears, enter your application's registration information:
    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, for example `ProfileSPA`.
-   - Change **Supported account types** to **Personal Microsoft accounts only**.
+   - Change **Supported account types** to **Accounts in this organizational directory only**.
    - Select **Register** to create the application.
 1. On the app **Overview** page, find the **Application (client) ID** value and record it for later. You'll need it to configure the configuration file for this projects.
 1. From the app's Overview page, select the **Authentication** section.
@@ -196,10 +193,23 @@ There are two projects in this sample. Each needs to be separately registered in
    - In the list of APIs, select the `ProfileAPI` API, or the name you entered for the web API
    - In the **Delegated permissions** section, ensure that the right permissions are checked: **access_as_user**. Use the search box if necessary.
    - Select the **Add permissions** button.
-1. Now you need to leave the registration for `ProfileSPA` and **go back** to your app registration for `ProfileAPI`.
-    - From the app's Overview page, select the **Manifest** section.
-    - Find the entry for `KnownClientApplications`, and add the **Application (client) ID** of the `ProfileSPA` application copied from the Azure portal.
-    i.e. `KnownClientApplications: [ "your-client-id-for-ProfileSPA" ]`
+
+#### Configure Known Client Applications for service (ProfileAPI)
+
+For a middle-tier web API (e.g. ProfileAPI) to be able to call a downstream web API (e.g. Microsoft Graph), the middle-tier app needs to be granted the required permissions as well. However, since the middle-tier cannot interact with the signed-in user, it needs to be explicitly bound to the client app in its **Azure AD** registration. This binding merges the permissions required by both the client and the middle-tier web API and presents it to the end user in a single consent dialog. The user then consent to this combined set of permissions.
+
+To achieve this, you need to add the **Application Id** of the client app (ProfileSPA), in the **Manifest** of the web API in the `knownClientApplications` property. Here's how:
+
+1. In the [Azure portal](https://portal.azure.com), navigate to your `ProfileAPI` app registration, and select **Manifest** section.
+1. In the manifest editor, change the `"knownClientApplications": []` line so that the array contains the Client ID of the client application (`ProfileSPA`) as an element of the array.
+
+    For instance:
+
+    ```json
+    "knownClientApplications": ["ca8dca8d-f828-4f08-82f5-325e1a1c6428"],
+    ```
+
+1. **Save** the changes to the manifest.
 
 ##### Configure the client app (ProfileSPA) to use your app registration
 
@@ -209,7 +219,11 @@ There are two projects in this sample. Each needs to be separately registered in
 1. Find the key `clientId` and replace the existing value with the application ID (clientId) of the `ProfileSPA` application copied from the Azure portal.
 1. Find the key `redirectUri` and replace the existing value with the base address of the ProfileSPA project (by default `http://localhost:3000/`).
 1. Find the key `resourceUri` and replace the existing value with the base address of the ProfileAPI project (by default `https://localhost:44351/api/profile`).
-1. Find the key `resourceScopes` and replace the existing value with *Scope* you created earlier `api://{client_id}/.default`.
+1. Find the key `resourceScopes` and replace the existing value with the scope you created earlier `api://{client_id_of_service_app}/.default`.
+
+> #### The `.default` scope
+>
+> Did you notice the scope here is set to `.default`, as opposed to `access_as_user`? This is a built-in scope for every application that refers to the static list of permissions configured on the application registration. Basically, it *bundles* all the permissions in one scope. The /.default scope can be used in any OAuth 2.0 flow. Read about `scopes` usage at [Scopes and permissions in the Microsoft Identity Platform](https://docs.microsoft.com/azure/active-directory/develop/v2-permissions-and-consent#scopes-and-permissions).
 
 ### Run the sample
 
@@ -238,7 +252,7 @@ In a separate console window, execute the following commands
 
 ![Screenshot](./ReadmeFiles/screenshot.png)
 
-> :information_source: Consider taking a moment to [share your experience with us](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR73pcsbpbxNJuZCMKN0lURpUM1QwMTZZSDMwSE81MEw5QzQ5SzM4WjZZQyQlQCN0PWcu). If the sample did not work for you as expected, then please reach out to us using the [GitHub Issues](../issues) page.
+> :information_source: Consider taking a moment to [share your experience with us](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR73pcsbpbxNJuZCMKN0lURpUM1QwMTZZSDMwSE81MEw5QzQ5SzM4WjZZQyQlQCN0PWcu). If the sample did not work for you as expected, then please reach out to us using the [GitHub Issues](../../issues) page.
 
 ## Debugging the sample
 
