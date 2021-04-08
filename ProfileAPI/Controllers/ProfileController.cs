@@ -73,22 +73,7 @@ namespace ProfileAPI.Controllers
             {
                 User profile = await _graphServiceClient.Me.Request().GetAsync();
 
-                string graphID;
-
-                // OID is represented in id_token as a 32 digit number, while in MS Graph API, the
-                // preceding 0s are sometimes omitted. The following operation adds the omitted 0s back.
-
-                if (profile.Id.Length < 32)
-                {
-                    int x = 32 - profile.Id.Length;
-                    graphID = new string('0', x) + profile.Id;
-                }
-                else
-                {
-                    graphID = profile.Id;
-                }
-
-                profileItem.Id = graphID;
+                profileItem.Id = profile.Id;
                 profileItem.UserPrincipalName = profile.UserPrincipalName;
                 profileItem.GivenName = profile.GivenName;
                 profileItem.Surname = profile.Surname;

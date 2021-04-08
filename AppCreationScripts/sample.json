@@ -20,14 +20,6 @@
           "Resource": "Microsoft Graph",
           "DelegatedPermissions": [ "User.Read", "offline_access" ]
         }
-      ],
-      "ManualSteps": [
-        {
-          "Comment": "Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2."
-        },
-        {
-          "Comment": "Navigate to the Manifest page, find the entry for 'KnownClientApplications' and add the clientId of ProfileSPA."
-        }
       ]
     },
     {
@@ -71,6 +63,10 @@
         {
           "key": "ClientSecret",
           "value": "service.AppKey"
+        },
+        {
+          "key": "TenantId",
+          "value": "$tenantId"
         }
       ]
     },
@@ -81,12 +77,16 @@
       "SettingFile": "\\..\\ProfileSPA\\src\\utils\\authConfig.js",
       "Mappings": [
         {
-          "key": "Enter the Client Id (aka 'Application ID')",
+          "key": "Enter_the_Application_Id_Here",
           "value": "client.AppId"
         },
         {
-          "key": "Enter the API scopes as declared in the app registration 'Expose an Api' blade in the form of 'api://{client_id}/.default'",
-          "value": "service.Scope"
+          "key": "Enter_the_Tenant_Info_Here",
+          "value": "$tenantId"
+        },
+        {
+          "key": "Enter_the_Application_Id_of_Service_Here",
+          "value": "service.AppId"
         }
       ]
     }
