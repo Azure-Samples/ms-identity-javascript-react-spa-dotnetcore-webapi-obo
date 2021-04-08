@@ -29,11 +29,10 @@ class ProfileContainer extends Component {
                 if (this.props.auth.idToken) {
                     // Our mock database assign user Ids based on MS Graph API account id, which corresponds to the "oid" claim in the id_token
                     // visit https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens for more information
-                    let tokenOID = this.props.auth.idToken.oid.replace(/-/gi, ''); // removing dashes
 
-                    // check if user already exists
                     try {
-                        this.props.getProfile(tokenOID);
+                        // check if user already exists
+                        this.props.getProfile(this.props.auth.idToken['oid']);
                     } catch (err) {
                         console.log(err);
                     }

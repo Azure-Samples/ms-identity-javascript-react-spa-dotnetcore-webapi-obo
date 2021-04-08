@@ -20,14 +20,6 @@
           "Resource": "Microsoft Graph",
           "DelegatedPermissions": [ "User.Read", "offline_access" ]
         }
-      ],
-      "ManualSteps": [
-        {
-          "Comment": "Navigate to the Manifest page and change 'accessTokenAcceptedVersion' to 2."
-        },
-        {
-          "Comment": "Navigate to the Manifest page, find the entry for 'KnownClientApplications' and add the clientId of ProfileSPA."
-        }
       ]
     },
     {

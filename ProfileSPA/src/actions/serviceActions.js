@@ -39,15 +39,13 @@ export const postProfile = (profile) => (dispatch, getState) => {
         },
         body: JSON.stringify(profile)
     }).then(response => {
-        console.log(response)
         if (response && response.status !== 404) {
             return response.json();
         }
     })
     .then((response) => {
-        console.log(response)
         if (response === 'interaction_required') {
-            // trigger interaction
+            // TODO: trigger interaction
         } else {
             dispatch(updateProfile(response))
             dispatch(updateUI(2))

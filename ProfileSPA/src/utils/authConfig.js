@@ -15,7 +15,7 @@ export const msalConfig = {
 // Coordinates and required scopes for your web API
 export const apiConfig = {
     resourceUri: "https://localhost:44351/api/profile",
-    resourceScopes: ["api://Enter_the_Application_Id_of_Service_Here/.default'"]
+    resourceScopes: ["api://Enter_the_Application_Id_of_Service_Here/.default"]
 }
 
 /** 
