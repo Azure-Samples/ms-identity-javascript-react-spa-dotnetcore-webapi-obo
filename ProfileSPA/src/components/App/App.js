@@ -52,22 +52,22 @@ class App extends React.Component {
                         <Button variant="outline-info" onClick={this.handleSignIn}>Login</Button>
                     </UnauthenticatedTemplate>
                 </Navbar>
-                    <AuthenticatedTemplate>
-                        <ProfileContainer
-                            updateToken={this.props.updateToken}
-                        />
-                    </AuthenticatedTemplate>
-                    <UnauthenticatedTemplate>
-                        <Jumbotron className="welcome">
-                            <h1>Azure AD On-Behalf-Of Flow</h1>
-                            <p>A React & Redux single-page application authorizing an ASP.NET Core web API
+                <AuthenticatedTemplate>
+                    <ProfileContainer
+                        updateToken={this.props.updateToken}
+                    />
+                </AuthenticatedTemplate>
+                <UnauthenticatedTemplate>
+                    <Jumbotron className="welcome">
+                        <h1>Azure AD On-Behalf-Of Flow</h1>
+                        <p>A React & Redux single-page application authorizing an ASP.NET Core web API
                         to call the Microsoft Graph API on-behalf-of a user via Microsoft Graph SDK.</p>
-                            <Button variant="primary"
-                                onClick={() => window.open("https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow", "_blank")}
-                            >Learn More</Button>
+                        <Button variant="primary"
+                            onClick={() => window.open("https://docs.microsoft.com/azure/active-directory/develop/v2-oauth2-on-behalf-of-flow", "_blank")}
+                        >Learn More</Button>
 
-                        </Jumbotron>
-                    </UnauthenticatedTemplate>
+                    </Jumbotron>
+                </UnauthenticatedTemplate>
             </div>
         );
     }

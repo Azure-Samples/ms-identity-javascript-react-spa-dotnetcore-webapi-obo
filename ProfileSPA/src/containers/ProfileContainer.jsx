@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { InteractionRequiredAuthError, InteractionStatus  } from "@azure/msal-browser";
+import { InteractionRequiredAuthError, InteractionStatus } from "@azure/msal-browser";
 import { withMsal } from "@azure/msal-react";
 
 import ProfileView from '../components/profile/profileView/ProfileView';
@@ -35,12 +35,8 @@ class ProfileContainer extends Component {
                 if (this.props.auth.idToken) {
                     // Our mock database assign user Ids based on MS Graph API account id, which corresponds to the "oid" claim in the id_token
                     // visit https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens for more information
-
-                    try {
-                        this.props.getProfile(tokenOID, response.accessToken);
-                    } catch (err) {
-                        console.log(err);
-                    }
+                    
+                    this.props.getProfile(response.idTokenClaims['oid'], response.accessToken);
                 }
             }).catch((error) => {
                 // in case if silent token acquisition fails, fallback to an interactive method
@@ -52,16 +48,8 @@ class ProfileContainer extends Component {
                             this.props.updateToken(response);
 
                             if (this.props.auth.idToken) {
-                                // Our mock database assign user Ids based on MS Graph API account id, which corresponds to the "oid" claim in the id_token
-                                // visit https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens for more information
-                                let tokenOID = response.idTokenClaims['oid'].replace(/-/gi, ''); // removing dashes
-            
                                 // check if user already exists
-                                try {
-                                    this.props.getProfile(tokenOID, response.accessToken);
-                                } catch (err) {
-                                    console.log(err);
-                                }
+                                this.props.getProfile(response.idTokenClaims['oid'], response.accessToken);
                             }
                         }).catch(error => console.log(error));
                     }
