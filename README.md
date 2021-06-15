@@ -156,8 +156,8 @@ There are two projects in this sample. Each needs to be separately registered in
    - Enter the following parameters
      - for **Scope name** use `access_as_user`
      - Keep **Admins and users** for **Who can consent**
-     - in **Admin consent display name** type `Access ProfileAPI as a user`
-     - in **Admin consent description** type `Accesses the ProfileAPI web API as a user`
+     - in **Admin consent display name** type `Access ProfileAPI as an admin`
+     - in **Admin consent description** type `Accesses the ProfileAPI web API as an admin`
      - in **User consent display name** type `Access ProfileAPI as a user`
      - in **User consent description** type `Accesses the ProfileAPI web API as a user`
      - Keep **State** as **Enabled**
