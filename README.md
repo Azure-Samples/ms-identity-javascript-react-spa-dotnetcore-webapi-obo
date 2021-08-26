@@ -90,7 +90,7 @@ or download and extract the repository .zip file.
 
 Learn more about [HTTPS in .NET Core](https://docs.microsoft.com/aspnet/core/security/enforcing-ssl).
 
-#### Step 4. Install Angular SPA dependencies
+#### Step 4. Install React SPA dependencies
 
 ```console
     cd ProfileSPA
